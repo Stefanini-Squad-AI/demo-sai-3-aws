@@ -22,6 +22,60 @@ const mockAccounts = [
     creditLimit: 10000.00,
     accountStatus: 'A',
   },
+  {
+    accountId: 22222222222,
+    currentBalance: 0.00,
+    creditLimit: 2500.00,
+    accountStatus: 'A',
+  },
+  {
+    accountId: 33333333333,
+    currentBalance: 8750.25,
+    creditLimit: 15000.00,
+    accountStatus: 'A',
+  },
+  {
+    accountId: 44444444444,
+    currentBalance: 0.00,
+    creditLimit: 1000.00,
+    accountStatus: 'A',
+  },
+  {
+    accountId: 55555555555,
+    currentBalance: -500.00,
+    creditLimit: 3000.00,
+    accountStatus: 'A',
+  },
+  {
+    accountId: 66666666666,
+    currentBalance: 15750.50,
+    creditLimit: 50000.00,
+    accountStatus: 'A',
+  },
+  {
+    accountId: 77777777777,
+    currentBalance: 3250.00,
+    creditLimit: 10000.00,
+    accountStatus: 'A',
+  },
+  {
+    accountId: 88888888888,
+    currentBalance: 625.50,
+    creditLimit: 2000.00,
+    accountStatus: 'A',
+  },
+  {
+    accountId: 99999999999,
+    currentBalance: 12500.75,
+    creditLimit: 25000.00,
+    accountStatus: 'A',
+  },
+  {
+    accountId: 10101010101,
+    currentBalance: 0.00,
+    creditLimit: 1500.00,
+    accountStatus: 'A',
+  },
   // ✅ NUEVO: Cuenta específica para testing del caso "already paid"
   {
     accountId: 50,

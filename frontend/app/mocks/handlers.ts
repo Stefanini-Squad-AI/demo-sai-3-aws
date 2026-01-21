@@ -54,6 +54,62 @@ const mockUsers: User[] = [
     avatar: "https://i.pravatar.cc/150?img=3",
     createdAt: "2024-01-20T14:45:00Z"
   },
+  { 
+    id: 4, 
+    userId: "USER0002",
+    name: "Jane Doe", 
+    role: "back-office",
+    avatar: "https://i.pravatar.cc/150?img=4",
+    createdAt: "2024-02-01T09:00:00Z"
+  },
+  { 
+    id: 5, 
+    userId: "MANAGER1",
+    name: "Alice Johnson", 
+    role: "admin",
+    avatar: "https://i.pravatar.cc/150?img=5",
+    createdAt: "2024-01-10T07:30:00Z"
+  },
+  { 
+    id: 6, 
+    userId: "CLERK001",
+    name: "Bob Wilson", 
+    role: "back-office",
+    avatar: "https://i.pravatar.cc/150?img=6",
+    createdAt: "2024-02-20T11:15:00Z"
+  },
+  { 
+    id: 7, 
+    userId: "CLERK002",
+    name: "Carol Brown", 
+    role: "back-office",
+    avatar: "https://i.pravatar.cc/150?img=7",
+    createdAt: "2024-02-25T10:00:00Z"
+  },
+  { 
+    id: 8, 
+    userId: "SUPPORT1",
+    name: "David Miller", 
+    role: "back-office",
+    avatar: "https://i.pravatar.cc/150?img=8",
+    createdAt: "2024-03-01T08:45:00Z"
+  },
+  { 
+    id: 9, 
+    userId: "AUDITOR1",
+    name: "Emily Davis", 
+    role: "back-office",
+    avatar: "https://i.pravatar.cc/150?img=9",
+    createdAt: "2024-03-05T13:20:00Z"
+  },
+  { 
+    id: 10, 
+    userId: "OPERATOR",
+    name: "Frank Martinez", 
+    role: "back-office",
+    avatar: "https://i.pravatar.cc/150?img=10",
+    createdAt: "2024-03-10T12:30:00Z"
+  },
 ];
 
 // Handlers de autenticación

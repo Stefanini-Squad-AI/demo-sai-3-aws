@@ -76,6 +76,24 @@ const mockUsers: UserSecurityData[] = [
     lastLoginDate: '2024-03-09',
     isActive: true,
   },
+  {
+    userId: 'AUDITOR1',
+    firstName: 'Emily',
+    lastName: 'Davis',
+    userType: 'U',
+    createdDate: '2024-03-05',
+    lastLoginDate: '2024-03-08',
+    isActive: true,
+  },
+  {
+    userId: 'OPERATOR',
+    firstName: 'Frank',
+    lastName: 'Martinez',
+    userType: 'U',
+    createdDate: '2024-03-10',
+    lastLoginDate: '2024-03-07',
+    isActive: true,
+  },
 ];
 
 export const userListHandlers = [
