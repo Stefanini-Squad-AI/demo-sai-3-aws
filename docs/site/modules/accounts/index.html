@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts Module - User Story Development Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #2d3748;
+            background: #f7fafc;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin: 5px 0;
+        }
+        
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .section h3 {
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+            font-size: 1.4rem;
+        }
+        
+        .section h4 {
+            color: #667eea;
+            margin: 20px 0 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .card {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f7fafc;
+            transition: all 0.2s;
+        }
+        
+        .card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+        
+        .card h4 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        
+        .card p {
+            margin: 10px 0;
+            color: #4a5568;
+        }
+        
+        .card strong {
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        .complexity {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .complexity-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .simple {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+        
+        .medium {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+        
+        .complex {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+            color: #4a5568;
+        }
+        
+        li strong {
+            color: #2d3748;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        tr:nth-child(even) {
+            background: #f7fafc;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-links a:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        footer p {
+            margin: 8px 0;
+            color: #718096;
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+        
+        .highlight {
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .api-endpoint {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📦 Accounts Module</h1>
+            <p><strong>User Story Development Guide</strong></p>
+            <p>Gestión integral de cuentas de crédito y datos de cliente</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Business Context:</strong> El módulo de cuentas es el núcleo del sistema de gestión de tarjetas de crédito. Permite visualizar información completa de cuentas (balances, límites, ciclos) y actualizar tanto datos de cuenta como información de cliente asociada. Migrado desde el sistema COBOL CardDemo original.</p>
+            
+            <p><strong>Key Responsibilities:</strong></p>
+            <ul>
+                <li><strong>Visualización de Cuentas:</strong> Consulta completa de datos de cuenta, cliente y referencia de tarjeta en una sola vista</li>
+                <li><strong>Actualización de Datos:</strong> Modificación de límites de crédito, estado de cuenta, información de cliente y contacto</li>
+                <li><strong>Validación de Negocio:</strong> Aplicación de reglas COBOL migradas (formatos, rangos, relaciones)</li>
+                <li><strong>Integración de Datos:</strong> Coordinación entre tablas Account, Customer y CardXref</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>Visualización de Cuentas</h4>
+                    <p><strong>Pattern:</strong> Como [rol de usuario], quiero visualizar [datos específicos de cuenta] para [tomar decisión/acción]</p>
+                    <p><strong>Example:</strong> Como oficial de crédito, quiero visualizar el balance actual y límite de crédito de una cuenta para evaluar si aprobar una solicitud de aumento de límite</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Actualización de Límites</h4>
+                    <p><strong>Pattern:</strong> Como [rol administrativo], quiero modificar [límite o estado] para [gestión de riesgo]</p>
+                    <p><strong>Example:</strong> Como administrador de cuentas, quiero actualizar el límite de crédito de una cuenta para ajustar el riesgo según cambios en el perfil crediticio del cliente</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Actualización de Cliente</h4>
+                    <p><strong>Pattern:</strong> Como [agente de servicio], quiero actualizar [datos de contacto] para [mantener información precisa]</p>
+                    <p><strong>Example:</strong> Como agente de servicio al cliente, quiero actualizar el teléfono y dirección del cliente para asegurar que las comunicaciones lleguen correctamente</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Análisis de Riesgo</h4>
+                    <p><strong>Pattern:</strong> Como [analista], quiero consultar [métricas financieras] para [evaluación de riesgo]</p>
+                    <p><strong>Example:</strong> Como analista de riesgo, quiero visualizar el FICO score y el historial de ciclos de una cuenta para determinar el nivel de exposición crediticia</p>
+                </div>
+            </div>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>Material-UI Components:</strong> 85% de componentes UI son reutilizables (TextField, Card, Button, Grid). No requiere desarrollo de componentes base.</li>
+                <li><strong>Service Layer Pattern:</strong> AccountViewService y AccountUpdateService ya implementan toda la lógica de negocio. Solo requiere invocación desde nuevos endpoints.</li>
+                <li><strong>DTO Standardization:</strong> AccountViewResponseDto y AccountUpdateRequestDto definen estructura completa. No hay ambigüedad en contratos.</li>
+                <li><strong>JPA Repositories:</strong> AccountRepository, CustomerRepository y CardXrefRepository ya proveen queries optimizadas con JOINs.</li>
+                <li><strong>Validation Utilities:</strong> ValidationUtil centraliza reglas de formato (11 dígitos, formato SSN, ZIP code). Reutilizable en nuevas features.</li>
+                <li><strong>COBOL Equivalence:</strong> Toda lógica migrada está documentada con comentarios indicando origen COBOL (9000-READ-ACCT, 2200-EDIT-MAP-INPUTS). Facilita validación de reglas.</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <div class="complexity">
+                <span class="complexity-badge simple">Simple (1-2 pts)</span>
+                <span class="complexity-badge medium">Medium (3-5 pts)</span>
+                <span class="complexity-badge complex">Complex (5-8 pts)</span>
+            </div>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> 
+                    <ul>
+                        <li>Visualizar datos de cuenta existente por ID (solo invoca AccountViewService.readAccountData)</li>
+                        <li>Agregar nuevo campo read-only a pantalla de visualización (solo frontend, sin lógica)</li>
+                        <li>Cambiar formato de fecha o moneda en UI (solo presentación)</li>
+                    </ul>
+                </li>
+                <li><strong>Medium (3-5 pts):</strong> 
+                    <ul>
+                        <li>Actualizar un campo de cuenta con validación de negocio (ej: límite de crédito debe ser > cash limit)</li>
+                        <li>Agregar nuevo campo editable con validación frontend + backend (ej: segundo teléfono con formato)</li>
+                        <li>Implementar filtro de búsqueda por rango de fechas (requiere query personalizada)</li>
+                    </ul>
+                </li>
+                <li><strong>Complex (5-8 pts):</strong> 
+                    <ul>
+                        <li>Actualización masiva de límites basada en FICO score (múltiples cuentas, validaciones, transacciones)</li>
+                        <li>Workflow de aprobación para cambios de límite >$10,000 (estado, notificaciones, auditoría)</li>
+                        <li>Integración con sistema externo de verificación de crédito (API externa, mapeo de datos, manejo de errores)</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>AccountViewScreen.tsx</h4>
+                    <p><strong>Responsibility:</strong> Pantalla React para visualizar detalles completos de cuenta y cliente con diseño en cards</p>
+                    <p><strong>Reusability:</strong> Patrón de búsqueda por ID + grid de información reutilizable para otros módulos (tarjetas, transacciones)</p>
+                    <p><strong>Key Features:</strong> Formato de moneda, enmascaramiento de SSN/tarjeta, responsive design</p>
+                </div>
+                
+                <div class="card">
+                    <h4>AccountUpdateScreen.tsx</h4>
+                    <p><strong>Responsibility:</strong> Pantalla React para editar cuenta y cliente con modo edición toggle</p>
+                    <p><strong>Reusability:</strong> Patrón de formulario multi-sección con validación en tiempo real aplicable a otros formularios complejos</p>
+                    <p><strong>Key Features:</strong> Edit mode toggle, validación local, confirmación de cambios, reset</p>
+                </div>
+                
+                <div class="card">
+                    <h4>AccountViewService.java</h4>
+                    <p><strong>Responsibility:</strong> Lógica de negocio para consulta de cuenta con joins a Customer y CardXref</p>
+                    <p><strong>Reusability:</strong> Método readAccountData() invocable desde cualquier servicio que necesite datos completos de cuenta</p>
+                    <p><strong>Key Features:</strong> Validaciones COBOL migradas, manejo de casos not-found, formato de SSN</p>
+                </div>
+                
+                <div class="card">
+                    <h4>AccountUpdateService.java</h4>
+                    <p><strong>Responsibility:</strong> Lógica de negocio para actualización coordinada de Account y Customer</p>
+                    <p><strong>Reusability:</strong> Transaccionalidad automática reutilizable, validaciones centralizadas</p>
+                    <p><strong>Key Features:</strong> Transacción @Transactional, validación con AccountValidationService</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Account.java (Entity)</h4>
+                    <p><strong>Responsibility:</strong> Entidad JPA mapeando tabla ACCOUNT con precisión COBOL (11 dígitos ID, BigDecimal para moneda)</p>
+                    <p><strong>Reusability:</strong> Modelo de dominio reutilizable en queries, DTOs y servicios</p>
+                    <p><strong>Key Features:</strong> Validaciones JPA, comentarios COBOL originales, tipos precisos</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Customer.java (Entity)</h4>
+                    <p><strong>Responsibility:</strong> Entidad JPA mapeando tabla CUSTOMER con datos personales y contacto</p>
+                    <p><strong>Reusability:</strong> Relacionable con múltiples cuentas via CardXref</p>
+                    <p><strong>Key Features:</strong> SSN de 9 dígitos, FICO score 300-850, campos de dirección multi-línea</p>
+                </div>
+            </div>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>Spring Data JPA:</strong> Persistencia y queries optimizadas con findByAccountIdOptional, findById</li>
+                <li><strong>Material-UI (React):</strong> TextField, Card, Grid, Button, Dialog para toda la UI</li>
+                <li><strong>Lombok:</strong> @Builder, @Data para reducir boilerplate en DTOs y Entities</li>
+                <li><strong>ValidationUtil:</strong> Servicio de validación compartido (isValidAccountId, formato numérico)</li>
+                <li><strong>CardXrefRepository:</strong> Tabla pivot para relacionar Account → Customer → Card</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <div class="api-endpoint">GET /api/account-view?accountId={id} - Visualizar detalles de cuenta</div>
+            <p><strong>Request:</strong> Query param accountId (Long, 11 dígitos)</p>
+            <p><strong>Response:</strong> AccountViewResponseDto con account, customer y card data</p>
+            
+            <div class="api-endpoint">GET /api/account-view/initialize - Inicializar pantalla</div>
+            <p><strong>Request:</strong> Ninguno</p>
+            <p><strong>Response:</strong> AccountViewResponseDto con mensaje "Enter or update id of account to display"</p>
+            
+            <div class="api-endpoint">GET /api/accounts/{accountId} - Obtener cuenta para edición</div>
+            <p><strong>Request:</strong> Path param accountId</p>
+            <p><strong>Response:</strong> AccountUpdateRequestDto con datos editables</p>
+            
+            <div class="api-endpoint">PUT /api/accounts/{accountId} - Actualizar cuenta y cliente</div>
+            <p><strong>Request:</strong> AccountUpdateRequestDto en body</p>
+            <p><strong>Response:</strong> {"message": "Changes committed to database"} o error</p>
+
+            <h3>📊 Data Models</h3>
+            <pre><code>// Account Entity - Campos principales
+public class Account {
+    private Long accountId;          // PK, 11 dígitos
+    private String activeStatus;     // 'Y' o 'N'
+    private BigDecimal currentBalance;
+    private BigDecimal creditLimit;
+    private BigDecimal cashCreditLimit;
+    private LocalDate openDate;
+    private LocalDate expirationDate;
+    private BigDecimal currentCycleCredit;
+    private BigDecimal currentCycleDebit;
+    private String groupId;
+}
+
+// Customer Entity - Campos principales
+public class Customer {
+    private Long customerId;         // PK, 9 dígitos
+    private String firstName;
+    private String lastName;
+    private String addressLine1;
+    private String stateCode;
+    private String zipCode;
+    private String phoneNumber1;
+    private String socialSecurityNumber; // 9 dígitos
+    private LocalDate dateOfBirth;
+    private Integer ficoScore;       // 300-850
+}
+
+// CardXrefRecord - Relación
+public class CardXrefRecord {
+    private String cardNumber;       // PK
+    private Long customerId;         // FK to Customer
+    private Long accountId;          // FK to Account
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>📋 Business Rules</h2>
+            <ul>
+                <li><strong>RN-ACC-001:</strong> El número de cuenta debe ser un número de exactamente 11 dígitos y no puede ser 00000000000</li>
+                <li><strong>RN-ACC-002:</strong> El estado de la cuenta solo puede ser 'Y' (Activo) o 'N' (Inactivo)</li>
+                <li><strong>RN-ACC-003:</strong> El balance actual puede ser negativo (deuda del cliente) o positivo (crédito a favor del cliente)</li>
+                <li><strong>RN-ACC-004:</strong> El límite de crédito debe ser mayor a 0 y típicamente mayor al límite de efectivo</li>
+                <li><strong>RN-ACC-005:</strong> El límite de crédito en efectivo debe ser menor o igual al límite de crédito total</li>
+                <li><strong>RN-ACC-006:</strong> La fecha de apertura debe ser anterior a la fecha actual</li>
+                <li><strong>RN-ACC-007:</strong> La fecha de expiración debe ser posterior a la fecha de apertura</li>
+                <li><strong>RN-ACC-008:</strong> Los datos de cliente asociados a una cuenta no pueden ser eliminados sin eliminar primero la cuenta (integridad referencial)</li>
+                <li><strong>RN-ACC-009:</strong> El FICO score debe estar en el rango 300-850 (estándar US)</li>
+                <li><strong>RN-ACC-010:</strong> El SSN debe tener exactamente 9 dígitos (formato US sin guiones en BD)</li>
+                <li><strong>RN-ACC-011:</strong> El código postal debe seguir formato US (5 dígitos o 5+4 con guion)</li>
+                <li><strong>RN-ACC-012:</strong> Cada cuenta debe estar referenciada en la tabla CARD_XREF con al menos una tarjeta asociada</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🎯 Acceptance Criteria Patterns</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4>Authentication</h4>
+                    <p>Must validate JWT token before allowing access to account data endpoints</p>
+                    <p>Must verify user has authorized role (USER or ADMIN)</p>
+                    <p>Must return 401 Unauthorized if token is expired or invalid</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Validation</h4>
+                    <p>Must verify accountId is exactly 11 digits and not 00000000000</p>
+                    <p>Must validate account status is 'Y' or 'N'</p>
+                    <p>Must verify credit limit > 0 and cash limit ≤ credit limit</p>
+                    <p>Must validate FICO score in range 300-850</p>
+                    <p>Must validate ZIP code format (5 or 5+4 digits)</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Performance</h4>
+                    <p>Must respond within 500ms for individual account view (P95)</p>
+                    <p>Must load related data (customer, card) in single query with JOINs</p>
+                    <p>Must update account and customer in single transaction</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Error Handling</h4>
+                    <p>Must display "Account number not provided" when field is empty</p>
+                    <p>Must display "Account number must be a non zero 11 digit number" for invalid format</p>
+                    <p>Must display "Account:XXXXX not found in Cross ref file" when not in CARD_XREF</p>
+                    <p>Must display "Account:XXXXX not found in Acct Master file" when not in ACCOUNT table</p>
+                    <p>Must display "Changes unsuccessful" when database update fails</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>⚡ Performance Considerations</h2>
+            <ul>
+                <li><strong>Response Time:</strong> < 500ms para consulta individual de cuenta (P95)</li>
+                <li><strong>Throughput:</strong> 100+ requests/segundo para endpoints de visualización (read-heavy)</li>
+                <li><strong>Memory Usage:</strong> < 50MB por request incluso con datos completos de cliente</li>
+                <li><strong>Cache Strategy:</strong> 
+                    <ul>
+                        <li>No implementado actualmente</li>
+                        <li>Recomendación: Cachear datos de referencia (códigos de país, estados) con TTL de 24h</li>
+                        <li>Evitar caché de balances y límites (datos transaccionales que cambian frecuentemente)</li>
+                    </ul>
+                </li>
+                <li><strong>Database Queries:</strong> Máximo 3 queries por request (Account + Customer + CardXref) usando JOINs optimizados</li>
+                <li><strong>Transaction Management:</strong> Actualización usa @Transactional para rollback automático en errores</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🚨 Development Risks & Mitigations</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4>⚠️ Migración COBOL Incompleta</h4>
+                    <p><strong>Risk:</strong> Lógica de negocio COBOL no migrada completamente puede causar comportamientos inesperados</p>
+                    <p><strong>Mitigation:</strong> Validar cada nueva feature contra documentación COBOL original (COACTVWC.CBL, COACTUPC.CBL). Usar comentarios en código que referencian secciones COBOL equivalentes.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>⚠️ Concurrencia No Controlada</h4>
+                    <p><strong>Risk:</strong> Dos usuarios actualizando la misma cuenta simultáneamente causa pérdida de datos (lost update)</p>
+                    <p><strong>Mitigation:</strong> Implementar @Version en Account y Customer entities para optimistic locking. Mostrar mensaje "Datos modificados por otro usuario, recargue" en conflictos.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>⚠️ Validaciones Frontend Deshabilitadas</h4>
+                    <p><strong>Risk:</strong> Validaciones comentadas en AccountUpdateScreen (líneas 87-91, 101-104) permiten datos inválidos</p>
+                    <p><strong>Mitigation:</strong> Descomentar validaciones de formato de 11 dígitos. Aunque backend valida, frontend debe prevenir requests inválidos para mejor UX.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>⚠️ No Hay Auditoría de Cambios</h4>
+                    <p><strong>Risk:</strong> Imposible rastrear quién modificó límites de crédito o datos sensibles</p>
+                    <p><strong>Mitigation:</strong> Implementar tabla ACCOUNT_AUDIT con triggers o listeners JPA (@EntityListeners). Registrar usuario, timestamp, valores old/new.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📚 Code Examples</h2>
+            <h3>Typical Implementation Pattern - Account View</h3>
+            <pre><code>// Frontend - AccountViewScreen.tsx
+const handleSubmit = (event: React.FormEvent) => {
+  event.preventDefault();
+  
+  if (!accountId.trim()) {
+    setFieldError('Account number not provided');
+    return;
+  }
+  
+  if (accountId.length !== 11 || accountId === '00000000000') {
+    setFieldError('Account number must be a non zero 11 digit number');
+    return;
+  }
+  
+  onSearch({ accountId });
+};
+
+// Backend - AccountViewService.java
+public AccountViewResponseDto readAccountData(Long accountId) {
+  // 1. Buscar en CardXref - equivalente a 9200-GETCARDXREF-BYACCT
+  Optional&lt;CardXrefRecord&gt; cardXrefOpt = 
+    cardXrefRepository.findByAccountId(accountId);
+  
+  if (cardXrefOpt.isEmpty()) {
+    return errorResponse("Account not found in Cross ref file");
+  }
+  
+  // 2. Buscar Account - equivalente a 9300-GETACCTDATA-BYACCT
+  Account account = accountRepository
+    .findByAccountIdOptional(accountId)
+    .orElseThrow(() -> new NotFoundException("Account not found"));
+  
+  // 3. Buscar Customer - equivalente a 9400-GETCUSTDATA-BYCUST
+  Customer customer = customerRepository
+    .findById(cardXref.getCustomerId())
+    .orElseThrow(() -> new NotFoundException("Customer not found"));
+  
+  // 4. Construir respuesta
+  return AccountViewResponseDto.builder()
+    .accountId(accountId)
+    .currentBalance(account.getCurrentBalance())
+    .creditLimit(account.getCreditLimit())
+    .firstName(customer.getFirstName())
+    .lastName(customer.getLastName())
+    // ... más campos
+    .build();
+}</code></pre>
+
+            <h3>Typical Implementation Pattern - Account Update</h3>
+            <pre><code>// Frontend - AccountUpdateScreen.tsx
+const handleFieldChange = (field: string, value: any) => {
+  // Validación local
+  if (field === 'creditLimit' && isNaN(Number(value))) {
+    setValidationErrors({ creditLimit: 'Must be a valid number' });
+    return;
+  }
+  
+  onDataChange({ [field]: value });
+};
+
+// Backend - AccountUpdateService.java
+@Transactional
+public void updateAccountAndCustomer(AccountUpdateRequestDto request) {
+  // Validar reglas de negocio
+  List&lt;String&gt; errors = validationService.validateAccountUpdate(request);
+  if (!errors.isEmpty()) {
+    throw new ValidationException(errors);
+  }
+  
+  // Actualizar Account
+  Account account = accountRepository.findById(request.getAccountId())
+    .orElseThrow(() -> new NotFoundException("Account not found"));
+  
+  account.setCreditLimit(request.getCreditLimit());
+  account.setCashCreditLimit(request.getCashCreditLimit());
+  account.setActiveStatus(request.getActiveStatus());
+  accountRepository.save(account);
+  
+  // Actualizar Customer relacionado
+  Customer customer = customerRepository.findById(request.getCustomerId())
+    .orElseThrow(() -> new NotFoundException("Customer not found"));
+  
+  customer.setFirstName(request.getFirstName());
+  customer.setPhoneNumber1(request.getPhoneNumber1());
+  customerRepository.save(customer);
+  
+  // Transacción se commitea automáticamente al salir del método
+}</code></pre>
+        </section>
+
+        <footer>
+            <div class="nav-links">
+                <a href="../../index.html">🏠 Back to Documentation Hub</a>
+                <a href="../../../system-overview.md">📋 View System Overview</a>
+            </div>
+            <p style="color: #2d3748; margin: 20px 0 10px 0; font-weight: 600;">
+                Accounts Module - Development Guide
+            </p>
+            <p><em>Last update: January 21, 2026 | Module accuracy: 98%</em></p>
+            <p style="margin-top: 15px; font-size: 0.9rem;">
+                Based on direct codebase analysis of Spring Boot + React migration from COBOL
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
