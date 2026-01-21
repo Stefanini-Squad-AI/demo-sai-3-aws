@@ -1,0 +1,20 @@
+FROM openjdk:21-jdk-slim
+
+# Instalar Maven
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copiar archivos de configuración de Maven primero
+COPY mvnw* ./
+COPY .mvn/ .mvn/
+
+# Copiar pom.xml para descargar dependencias
+COPY pom.xml .
+
+# Limpiar caché de Maven y descargar dependencias (incluyendo SpringDoc)
+RUN mvn -B -DskipTests dependency:go-offline
+
+EXPOSE 8080 5005
+
+# El comando se ejecuta desde docker-compose

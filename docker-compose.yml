@@ -1,0 +1,84 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: card_management_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: card_management
+      POSTGRES_USER: card_user
+      POSTGRES_PASSWORD: card_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - card-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U card_user -d card_management"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  card-management-app:
+    build:
+      context: ./management
+      dockerfile: Dockerfile.dev
+    container_name: card_management_app
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: card_management
+      DB_USER: card_user
+      DB_PASSWORD: card_password
+      DB_URL: jdbc:postgresql://postgres:5432/card_management
+      SPRING_PROFILES_ACTIVE: docker,dev
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - card-network
+    volumes:
+      - ./management/src:/app/src # Código montado para edición (read/write)
+      - target-volume:/app/target # target en volumen Docker (evita locks del host)
+      - ./management/logs:/app/logs
+      - maven_cache:/root/.m2
+    working_dir: /app
+    command: >
+      sh -c "
+        ls -la src/main/java/ &&
+        mvn -B -f /app/pom.xml dependency:resolve -U &&
+        mvn -B -f /app/pom.xml dependency:tree | grep springdoc || true &&
+        find /root/.m2/repository -name 'springdoc' | head -10 || true &&
+        mvn -B -f /app/pom.xml compile &&
+        mvn -B -f /app/pom.xml spring-boot:run -Dspring-boot.run.mainClass=com.card.management.ManagementApplication -Dlogging.level.org.springdoc=DEBUG
+      "
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: card_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    networks:
+      - card-network
+    depends_on:
+      - card-management-app
+    volumes:
+      - ./frontend:/app
+
+volumes:
+  postgres_data:
+  maven_cache:
+  target-volume: {}
+
+networks:
+  card-network:
+    driver: bridge
