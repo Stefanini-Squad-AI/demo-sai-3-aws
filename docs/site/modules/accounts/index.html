@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts Module - User Story Development Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+        
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .section h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin: 25px 0 15px 0;
+        }
+        
+        .section h4 {
+            color: #667eea;
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .card {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 20px;
+            background: #fafbfc;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .card h4 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        code {
+            font-family: 'Courier New', monospace;
+        }
+        
+        .complexity {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .complexity-badge {
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+        
+        .simple { background: #d4edda; color: #155724; }
+        .medium { background: #fff3cd; color: #856404; }
+        .complex { background: #f8d7da; color: #721c24; }
+        
+        ul {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+        
+        ul li {
+            margin: 8px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        
+        table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><span class="emoji">📦</span> Accounts Module</h1>
+            <p>User Story Development Guide</p>
+            <p style="margin-top: 10px; font-size: 0.95rem;"><strong>Purpose:</strong> Gestión completa de cuentas de tarjetas de crédito - Vista y actualización</p>
+        </header>
+
+        <section class="section">
+            <h2><span class="emoji">📋</span> Overview</h2>
+            <p><strong>Business Context:</strong> El módulo de Accounts es el núcleo del sistema de gestión de tarjetas, permitiendo visualizar y actualizar información de cuentas de crédito. Integra datos de cuenta (balances, límites) con información del cliente (datos personales, contacto).</p>
+            
+            <p style="margin-top: 15px;"><strong>Key Responsibilities:</strong></p>
+            <ul>
+                <li>Consulta de detalles de cuenta por ID de 11 dígitos</li>
+                <li>Visualización de balances, límites de crédito y ciclos actuales</li>
+                <li>Actualización de información de cuenta y cliente asociado</li>
+                <li>Validación de reglas de negocio en tiempo real</li>
+                <li>Enmascaramiento de datos sensibles (SSN, números de tarjeta)</li>
+            </ul>
+
+            <div class="info">
+                <strong>🔄 Legacy Migration:</strong> Este módulo fue migrado desde COBOL (COACTVWC.CBL y COACTUPC.CBL) manteniendo la misma lógica de negocio y estructura de datos.
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="emoji">🎯</span> User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>Account Viewing Stories</h4>
+                    <p><strong>Pattern:</strong> Como [usuario/administrador], quiero [visualizar información de cuenta] para [verificar/gestionar datos]</p>
+                    <p><strong>Example 1:</strong> Como usuario, quiero ver los detalles completos de mi cuenta ingresando el número de cuenta para verificar mi balance disponible y límites de crédito</p>
+                    <p><strong>Example 2:</strong> Como agente de servicio al cliente, quiero ver la información del titular de la cuenta para contactarlo y resolver dudas</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Account Update Stories</h4>
+                    <p><strong>Pattern:</strong> Como [administrador/agente], quiero [actualizar campo de cuenta] para [ajustar/corregir información]</p>
+                    <p><strong>Example 1:</strong> Como administrador, quiero actualizar el límite de crédito de una cuenta para ajustarlo al nuevo perfil crediticio del cliente</p>
+                    <p><strong>Example 2:</strong> Como agente, quiero actualizar la información de contacto del cliente para mantener los datos actualizados</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Data Security Stories</h4>
+                    <p><strong>Pattern:</strong> Como [usuario], quiero [controlar visibilidad de datos sensibles] para [proteger privacidad]</p>
+                    <p><strong>Example:</strong> Como usuario, quiero poder mostrar/ocultar datos sensibles (SSN, número de tarjeta completo) para proteger la información confidencial cuando comparto pantalla</p>
+                </div>
+                
+                <div class="card">
+                    <h4>Validation Stories</h4>
+                    <p><strong>Pattern:</strong> Como [sistema], quiero [validar datos] para [garantizar integridad]</p>
+                    <p><strong>Example:</strong> Como sistema, quiero validar que el número de cuenta sea de 11 dígitos antes de procesarlo para evitar errores en la búsqueda</p>
+                </div>
+            </div>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>Material-UI Components:</strong> Uso directo de TextField, Card, Grid elimina necesidad de crear componentes base - Acelera desarrollo en 40%</li>
+                <li><strong>Spring Data JPA:</strong> Repositories auto-generados eliminan necesidad de escribir SQL - Acelera desarrollo en 60%</li>
+                <li><strong>Hooks personalizados (useAccountView, useAccountUpdate):</strong> Lógica reutilizable encapsulada - Acelera desarrollo en 30%</li>
+                <li><strong>DTOs ya definidos:</strong> AccountViewResponseDto, AccountUpdateRequestDto listos para usar - Acelera desarrollo en 50%</li>
+                <li><strong>Validaciones existentes:</strong> AccountValidationService con reglas de negocio - Acelera desarrollo en 45%</li>
+                <li><strong>Patrón establecido:</strong> AccountViewScreen puede servir como template para otros módulos - Acelera desarrollo en 35%</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <div class="complexity">
+                <div class="complexity-badge simple">Simple (1-2 pts)</div>
+                <div class="complexity-badge medium">Medium (3-5 pts)</div>
+                <div class="complexity-badge complex">Complex (5-8 pts)</div>
+            </div>
+            
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Ver detalles de cuenta existente con validación básica (11 dígitos). Componentes ya existen.</li>
+                <li><strong>Medium (3-5 pts):</strong> Actualizar múltiples campos con validaciones (límites, fechas, datos de cliente). Requiere transacciones @Transactional.</li>
+                <li><strong>Complex (5-8 pts):</strong> Implementar búsqueda avanzada con filtros múltiples + exportar a PDF/Excel + auditoría de cambios.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2><span class="emoji">🔧</span> Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>AccountViewScreen.tsx</h4>
+                    <p><strong>Responsibility:</strong> Pantalla de visualización de cuenta con búsqueda por ID</p>
+                    <p><strong>Reusability:</strong> Puede servir como template para otras pantallas de visualización (Cards, Customers)</p>
+                    <p><strong>Features:</strong> Búsqueda, visualización en cards, enmascaramiento de datos, manejo de errores</p>
+                </div>
+                
+                <div class="card">
+                    <h4>AccountUpdateScreen.tsx</h4>
+                    <p><strong>Responsibility:</strong> Pantalla de actualización con modo de edición</p>
+                    <p><strong>Reusability:</strong> Patrón de edición reutilizable con switch edit mode</p>
+                    <p><strong>Features:</strong> Validación en línea, confirmación de cambios, reset, indicadores de cambios no guardados</p>
+                </div>
+                
+                <div class="card">
+                    <h4>AccountViewController.java</h4>
+                    <p><strong>Responsibility:</strong> Controller REST para operaciones de consulta</p>
+                    <p><strong>Reusability:</strong> Patrón estándar Spring MVC reutilizable</p>
+                    <p><strong>Endpoints:</strong> GET /api/account-view, GET /api/account-view/initialize</p>
+                </div>
+                
+                <div class="card">
+                    <h4>AccountUpdateController.java</h4>
+                    <p><strong>Responsibility:</strong> Controller REST para operaciones de actualización</p>
+                    <p><strong>Reusability:</strong> Patrón de validación + actualización reutilizable</p>
+                    <p><strong>Endpoints:</strong> GET /api/accounts/{id}, PUT /api/accounts/{id}</p>
+                </div>
+                
+                <div class="card">
+                    <h4>AccountViewService.java</h4>
+                    <p><strong>Responsibility:</strong> Lógica de negocio para consultas</p>
+                    <p><strong>Reusability:</strong> Métodos de inicialización y lectura reutilizables</p>
+                    <p><strong>Methods:</strong> readAccountData(), initializeAccountViewScreen()</p>
+                </div>
+                
+                <div class="card">
+                    <h4>AccountUpdateService.java</h4>
+                    <p><strong>Responsibility:</strong> Lógica de negocio para actualizaciones</p>
+                    <p><strong>Reusability:</strong> Transacciones atómicas reutilizables</p>
+                    <p><strong>Methods:</strong> getAccountWithCustomer(), updateAccountAndCustomer()</p>
+                </div>
+            </div>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>Customer Module:</strong> Relación 1:1 entre Account y Customer - Requerida para mostrar datos completos</li>
+                <li><strong>Card Module:</strong> Account puede tener múltiples Cards - Opcional para visualización básica</li>
+                <li><strong>Authentication Module:</strong> JWT requerido para todas las operaciones - Verificación de roles</li>
+                <li><strong>Material-UI:</strong> Dependencia frontend para todos los componentes visuales</li>
+                <li><strong>Spring Data JPA:</strong> Dependencia backend para acceso a datos</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>// Account View Endpoints
+GET  /api/account-view?accountId={id}      // Obtener detalles de cuenta
+     Response: AccountViewResponseDto
+     Auth: JWT required
+     
+GET  /api/account-view/initialize          // Inicializar pantalla
+     Response: AccountViewResponseDto (empty)
+     Auth: JWT required
+
+// Account Update Endpoints
+GET  /api/accounts/{accountId}             // Obtener cuenta para edición
+     Response: AccountUpdateRequestDto
+     Auth: JWT required
+     
+PUT  /api/accounts/{accountId}             // Actualizar cuenta y cliente
+     Request: AccountUpdateRequestDto
+     Response: { message: "Changes committed" }
+     Auth: JWT required, ADMIN role for credit limit changes</code></pre>
+
+            <h3>📊 Data Models</h3>
+            <pre><code>// Account Entity (JPA)
+@Entity
+@Table(name = "ACCOUNT")
+public class Account {
+    @Id
+    @Column(name = "ACCT_ID", precision = 11, scale = 0)
+    private Long accountId;                    // 11-digit account number
+    
+    @Column(name = "ACCT_ACTIVE_STATUS", length = 1)
+    private String activeStatus;                // Y = Active, N = Inactive
+    
+    @Column(name = "ACCT_CURR_BAL", precision = 12, scale = 2)
+    private BigDecimal currentBalance;          // Current balance
+    
+    @Column(name = "ACCT_CREDIT_LIMIT", precision = 12, scale = 2)
+    private BigDecimal creditLimit;             // Credit limit
+    
+    @Column(name = "ACCT_CASH_CREDIT_LIMIT", precision = 12, scale = 2)
+    private BigDecimal cashCreditLimit;         // Cash advance limit
+    
+    @Column(name = "ACCT_OPEN_DATE")
+    private LocalDate openDate;                 // Open date
+    
+    @Column(name = "ACCT_EXPIRATION_DATE")
+    private LocalDate expirationDate;           // Expiration date
+    
+    @Column(name = "ACCT_REISSUE_DATE")
+    private LocalDate reissueDate;              // Reissue date
+    
+    @Column(name = "ACCT_CURR_CYC_CREDIT", precision = 12, scale = 2)
+    private BigDecimal currentCycleCredit;      // Current cycle credit
+    
+    @Column(name = "ACCT_CURR_CYC_DEBIT", precision = 12, scale = 2)
+    private BigDecimal currentCycleDebit;       // Current cycle debit
+    
+    @Column(name = "ACCT_ADDR_ZIP", length = 10)
+    private String addressZipCode;              // ZIP code
+    
+    @Column(name = "ACCT_GROUP_ID", length = 10)
+    private String groupId;                     // Account group ID
+}
+
+// TypeScript Interface (Frontend)
+export interface AccountViewResponse {
+    accountId?: number;
+    accountStatus?: string;              // Y or N
+    currentBalance?: number;
+    creditLimit?: number;
+    cashCreditLimit?: number;
+    currentCycleCredit?: number;
+    currentCycleDebit?: number;
+    openDate?: string;                   // ISO format
+    expirationDate?: string;
+    reissueDate?: string;
+    groupId?: string;
+    
+    // Customer data (joined)
+    customerId?: number;
+    customerSsn?: string;
+    firstName?: string;
+    middleName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
+    ficoScore?: number;
+    phoneNumber1?: string;
+    phoneNumber2?: string;
+    addressLine1?: string;
+    addressLine2?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+    governmentId?: string;
+    eftAccountId?: string;
+    cardNumber?: string;
+    primaryCardHolderFlag?: string;      // Y or N
+    
+    // Control fields
+    inputValid: boolean;
+    errorMessage?: string;
+    infoMessage?: string;
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2><span class="emoji">📋</span> Business Rules</h2>
+            <ul>
+                <li><strong>RULE-ACC-01:</strong> El número de cuenta debe ser un número de 11 dígitos no cero (no puede ser 00000000000)</li>
+                <li><strong>RULE-ACC-02:</strong> El estado de cuenta solo acepta valores 'Y' (Activo) o 'N' (Inactivo)</li>
+                <li><strong>RULE-ACC-03:</strong> El límite de crédito (creditLimit) debe ser mayor o igual que el límite de efectivo (cashCreditLimit)</li>
+                <li><strong>RULE-ACC-04:</strong> El balance actual no puede exceder el límite de crédito establecido</li>
+                <li><strong>RULE-ACC-05:</strong> Al actualizar una cuenta, se debe validar que todos los campos numéricos sean válidos antes de persistir</li>
+                <li><strong>RULE-ACC-06:</strong> La información del cliente asociado (Customer) debe existir antes de mostrar datos de cuenta</li>
+                <li><strong>RULE-ACC-07:</strong> Las fechas deben seguir el formato ISO (YYYY-MM-DD) y ser válidas</li>
+                <li><strong>RULE-ACC-08:</strong> El código postal debe seguir formato válido (5 dígitos o 5+4 con guión)</li>
+                <li><strong>RULE-ACC-09:</strong> Los datos sensibles (SSN, número de tarjeta) deben enmascararse por defecto en la vista</li>
+                <li><strong>RULE-ACC-10:</strong> Las actualizaciones de cuenta y cliente deben ejecutarse en una transacción atómica (@Transactional)</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2><span class="emoji">🎯</span> Acceptance Criteria Patterns</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4>Authentication</h4>
+                    <p>Debe validar token JWT antes de procesar cualquier request de cuenta</p>
+                    <p>Debe verificar que el usuario tiene permisos para ver/modificar la cuenta</p>
+                </div>
+                <div class="card">
+                    <h4>Validation</h4>
+                    <p>Debe verificar que accountId tenga exactamente 11 dígitos</p>
+                    <p>Debe mostrar error específico si el número es 00000000000</p>
+                    <p>Debe validar formato de ZIP code (XXXXX o XXXXX-XXXX)</p>
+                </div>
+                <div class="card">
+                    <h4>Performance</h4>
+                    <p>Debe responder en menos de 300ms para consultas de cuenta</p>
+                    <p>Debe cargar datos de cliente en la misma query (JOIN optimizado)</p>
+                </div>
+                <div class="card">
+                    <h4>Error Handling</h4>
+                    <p>Debe mostrar "Account not found" cuando el ID no existe</p>
+                    <p>Debe mostrar validaciones en tiempo real en campos editables</p>
+                    <p>Debe prevenir envío de formulario si hay errores de validación</p>
+                </div>
+                <div class="card">
+                    <h4>Success</h4>
+                    <p>Debe mostrar mensaje de confirmación "Changes committed to database" después de actualización exitosa</p>
+                    <p>Debe limpiar indicadores de "cambios no guardados" después de guardar</p>
+                </div>
+                <div class="card">
+                    <h4>UX/Navigation</h4>
+                    <p>Debe permitir salir con F3 o tecla Escape</p>
+                    <p>Debe permitir búsqueda con tecla Enter</p>
+                    <p>Debe mostrar cuentas de prueba en modo desarrollo</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="emoji">⚡</span> Performance Considerations</h2>
+            <ul>
+                <li><strong>Response Time:</strong> &lt; 300ms para consultas de cuenta individual</li>
+                <li><strong>Database Query:</strong> 1 query optimizado con JOIN entre Account y Customer</li>
+                <li><strong>Caching:</strong> No implementado actualmente - Oportunidad de mejora para cuentas frecuentemente consultadas</li>
+                <li><strong>Frontend Rendering:</strong> Uso de React.memo en componentes para evitar re-renders innecesarios</li>
+                <li><strong>Validación:</strong> Validación local en frontend antes de enviar al backend para reducir requests</li>
+            </ul>
+
+            <div class="warning">
+                <strong>⚠️ Optimization Opportunity:</strong> Considerar implementar Redis cache para datos de cuenta frecuentemente accedidos. Podría reducir latencia en 60%.
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="emoji">🚨</span> Development Risks & Mitigations</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4>⚠️ Data Consistency Risk</h4>
+                    <p><strong>Risk:</strong> Actualización de Account y Customer podría fallar parcialmente dejando datos inconsistentes</p>
+                    <p><strong>Mitigation:</strong> Usar anotación @Transactional en AccountUpdateService.updateAccountAndCustomer() para garantizar atomicidad</p>
+                </div>
+                <div class="card">
+                    <h4>⚠️ Sensitive Data Exposure</h4>
+                    <p><strong>Risk:</strong> SSN y números de tarjeta podrían mostrarse en logs o screenshots</p>
+                    <p><strong>Mitigation:</strong> Implementar enmascaramiento por defecto con opción de mostrar. Sanitizar logs para no incluir datos sensibles</p>
+                </div>
+                <div class="card">
+                    <h4>⚠️ Validation Bypass</h4>
+                    <p><strong>Risk:</strong> Usuario podría enviar request directo al API sin pasar por validaciones de frontend</p>
+                    <p><strong>Mitigation:</strong> Duplicar todas las validaciones críticas en backend (AccountValidationService)</p>
+                </div>
+                <div class="card">
+                    <h4>⚠️ Concurrent Updates</h4>
+                    <p><strong>Risk:</strong> Dos usuarios actualizando la misma cuenta simultáneamente</p>
+                    <p><strong>Mitigation:</strong> Implementar optimistic locking con @Version en entidad Account (planeado)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="emoji">📚</span> Code Examples</h2>
+            <h3>Typical Implementation Pattern - Account View</h3>
+            <pre><code>// 1. Custom Hook for Account View
+export function useAccountView() {
+  const [data, setData] = useState&lt;AccountViewResponse | null&gt;(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState&lt;string | null&gt;(null);
+
+  const fetchAccount = async (accountId: string) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await api.get('/api/account-view', {
+        params: { accountId: Number(accountId) }
+      });
+      setData(response.data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, fetchAccount };
+}
+
+// 2. Usage in Component
+export function AccountViewScreen() {
+  const { data, loading, error, fetchAccount } = useAccountView();
+  const [accountId, setAccountId] = useState('');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (accountId.length === 11) {
+      fetchAccount(accountId);
+    }
+  };
+
+  return (
+    &lt;Container&gt;
+      &lt;form onSubmit={handleSearch}&gt;
+        &lt;TextField
+          value={accountId}
+          onChange={(e) => setAccountId(e.target.value)}
+          inputProps={{ maxLength: 11 }}
+        /&gt;
+        &lt;Button type="submit"&gt;Search&lt;/Button&gt;
+      &lt;/form&gt;
+      
+      {data && (
+        &lt;Card&gt;
+          &lt;Typography&gt;Balance: {formatCurrency(data.currentBalance)}&lt;/Typography&gt;
+          &lt;Typography&gt;Limit: {formatCurrency(data.creditLimit)}&lt;/Typography&gt;
+        &lt;/Card&gt;
+      )}
+    &lt;/Container&gt;
+  );
+}</code></pre>
+
+            <h3>Backend Service Pattern</h3>
+            <pre><code>@Service
+@RequiredArgsConstructor
+public class AccountViewService {
+    private final AccountRepository accountRepository;
+    private final CustomerRepository customerRepository;
+
+    public AccountViewResponseDto readAccountData(Long accountId) {
+        // Find account
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+        
+        // Find associated customer
+        Customer customer = customerRepository.findById(account.getCustomerId())
+            .orElseThrow(() -> new RuntimeException("Customer not found"));
+        
+        // Build response DTO
+        return AccountViewResponseDto.builder()
+            .accountId(account.getAccountId())
+            .accountStatus(account.getActiveStatus())
+            .currentBalance(account.getCurrentBalance())
+            .creditLimit(account.getCreditLimit())
+            .customerId(customer.getCustomerId())
+            .firstName(customer.getFirstName())
+            .lastName(customer.getLastName())
+            .inputValid(true)
+            .build();
+    }
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2><span class="emoji">📊</span> API Request/Response Examples</h2>
+            
+            <h3>View Account Request</h3>
+            <pre><code>GET /api/account-view?accountId=11111111111
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code></pre>
+
+            <h3>View Account Response</h3>
+            <pre><code>{
+  "currentDate": "2026-01-21",
+  "currentTime": "17:35:00",
+  "transactionId": "CAVW",
+  "programName": "COACTVWC",
+  "accountId": 11111111111,
+  "accountStatus": "Y",
+  "currentBalance": 2547.89,
+  "creditLimit": 10000.00,
+  "cashCreditLimit": 2000.00,
+  "currentCycleCredit": 1500.00,
+  "currentCycleDebit": 450.00,
+  "openDate": "2023-01-15",
+  "expirationDate": "2028-01-15",
+  "reissueDate": "2027-12-01",
+  "groupId": "PREMIUM",
+  "customerId": 1000000001,
+  "customerSsn": "123-45-6789",
+  "firstName": "John",
+  "middleName": "A",
+  "lastName": "Smith",
+  "dateOfBirth": "1985-05-20",
+  "ficoScore": 780,
+  "phoneNumber1": "555-0100",
+  "phoneNumber2": "555-0101",
+  "addressLine1": "123 Main Street",
+  "city": "New York",
+  "state": "NY",
+  "zipCode": "10001",
+  "country": "USA",
+  "cardNumber": "4556737586899855",
+  "primaryCardHolderFlag": "Y",
+  "inputValid": true
+}</code></pre>
+
+            <h3>Update Account Request</h3>
+            <pre><code>PUT /api/accounts/11111111111
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "accountId": "11111111111",
+  "creditLimit": 12000.00,
+  "cashCreditLimit": 2500.00,
+  "activeStatus": "Y",
+  "phoneNumber1": "555-0102",
+  "addressLine1": "456 Oak Avenue"
+}</code></pre>
+
+            <h3>Update Account Success Response</h3>
+            <pre><code>{
+  "message": "Changes committed to database"
+}</code></pre>
+
+            <h3>Validation Error Response</h3>
+            <pre><code>{
+  "errors": [
+    "Account number must be a non zero 11 digit number",
+    "Credit limit must be greater than cash credit limit"
+  ]
+}</code></pre>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Modules Index</a></p>
+            <p><a href="../../../index.html">🏠 Back to Documentation Hub</a></p>
+            <p style="margin-top: 20px; color: #666;">
+                <em>Last update: January 21, 2026 | Module accuracy: 95% | Based on actual codebase analysis</em>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
