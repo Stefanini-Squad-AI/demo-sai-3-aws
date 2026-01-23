@@ -62,7 +62,6 @@ node_modules/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Vite build output
 dist-ssr
