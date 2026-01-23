@@ -7,10 +7,10 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: "/app/", // ⭐ AGREGADO: Base path para GitHub Pages
+    base: "/app/", // ⭐ Para GitHub Pages
     resolve: {
       alias: {
-        "~": resolve(__dirname, "./app"), // Alias para simplificar imports
+        "~": resolve(__dirname, "./app"),
       },
     },
     server: {
@@ -19,20 +19,19 @@ export default defineConfig(({ mode }) => {
       host: true,
       proxy: {
         "/api": {
-          target: "http://18.217.121.166:8082", // Proxy hacia el backend en desarrollo
+          target: "http://18.217.121.166:8082",
           changeOrigin: true,
           secure: false,
         },
       },
     },
     build: {
-      target: "esnext", // Target de compilación moderno
-      outDir: "docs",   // ⭐ CAMBIADO: de "dist" a "docs" para GitHub Pages
-      sourcemap: false, // Deshabilitar sourcemaps en producción
+      target: "esnext",
+      outDir: "dist", // ⭐ Mantener como "dist"
+      sourcemap: false,
       rollupOptions: {
         output: {
           manualChunks: {
-            // Dividir dependencias en chunks separados
             vendor: ["react", "react-dom"],
             mui: [
               "@mui/material",
@@ -47,7 +46,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
-      __DEV__: JSON.stringify(isDevelopment), // Define una variable global __DEV__
+      __DEV__: JSON.stringify(isDevelopment),
     },
   };
 });
