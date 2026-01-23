@@ -1,18 +1,23 @@
 // app/mocks/index.ts (actualizado)
 export async function enableMocking() {
-  const useMocks = import.meta.env.VITE_USE_MOCKS === 'true';
+  const useMocks = import.meta.env.VITE_USE_MOCKS === 'true' || 
+                   window.location.hostname.includes('github.io');
   
   if (useMocks) {
     const { worker } = await import('./browser');
     
+    // ✅ Detectar la ruta base automáticamente
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const serviceWorkerUrl = `${baseUrl}mockServiceWorker.js`;
+    
     await worker.start({
       onUnhandledRequest: 'bypass',
       serviceWorker: {
-        url: '/mockServiceWorker.js', // Asegúrate de que el archivo esté en esta ruta
+        url: serviceWorkerUrl,
       },
     });
 
-    console.log('🔶 MSW enabled for development');
+    console.log('🔶 MSW enabled with service worker at:', serviceWorkerUrl);
     return worker;
   }
 
