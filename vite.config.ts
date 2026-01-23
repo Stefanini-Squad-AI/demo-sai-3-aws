@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: "/app/", // ⭐ Para GitHub Pages
+    base: "/demo-sai-3-aws/", // ⭐ CORREGIDO: nombre real del repositorio
     resolve: {
       alias: {
         "~": resolve(__dirname, "./app"),
@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: "esnext",
-      outDir: "dist", // ⭐ Mantener como "dist"
+      outDir: "dist",
       sourcemap: false,
       rollupOptions: {
         output: {
