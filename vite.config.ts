@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    base: "/app/", // ⭐ AGREGADO: Base path para GitHub Pages
     resolve: {
       alias: {
         "~": resolve(__dirname, "./app"), // Alias para simplificar imports
@@ -26,7 +27,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: "esnext", // Target de compilación moderno
-      outDir: "dist",   // Directorio de salida para archivos generados
+      outDir: "docs",   // ⭐ CAMBIADO: de "dist" a "docs" para GitHub Pages
       sourcemap: false, // Deshabilitar sourcemaps en producción
       rollupOptions: {
         output: {
