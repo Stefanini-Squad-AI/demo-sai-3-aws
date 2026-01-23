@@ -14,6 +14,7 @@ import {
   Divider,
   useTheme,
   alpha,
+  Tooltip,
 } from '@mui/material';
 import {
   Person,
@@ -22,6 +23,7 @@ import {
   VisibilityOff,
   Login as LoginIcon,
   CreditCard,
+  MenuBook, // ✅ NUEVO: Icono para documentación
 } from '@mui/icons-material';
 import { SystemHeader } from '~/components/layout/SystemHeader';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
@@ -54,6 +56,13 @@ export default function LoginPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   
   const hasRedirected = useRef(false);
+
+  // ✅ NUEVO: Función para abrir documentación
+  const handleOpenDocs = useCallback(() => {
+    // Abrir en nueva pestaña la documentación
+    const docsUrl = `${window.location.origin}${import.meta.env.BASE_URL || '/'}docs/site/index.html`;
+    window.open(docsUrl, '_blank', 'noopener,noreferrer');
+  }, []);
 
   // ✅ CORRECCIÓN: Redireccionar si ya está autenticado
   useEffect(() => {
@@ -185,14 +194,47 @@ export default function LoginPage() {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        {/* ✅ CORRECCIÓN: No mostrar navegación en login */}
-        <SystemHeader
-          transactionId="CC00"
-          programName="COSGN00C"
-          title="CardDemo - Aplicación de demostración de tarjetas"
-          subtitle="Modernización de mainframe"
-          showNavigation={false}
-        />
+        {/* ✅ MODIFICADO: SystemHeader con botón de documentación */}
+        <Box sx={{ position: 'relative' }}>
+          <SystemHeader
+            transactionId="CC00"
+            programName="COSGN00C"
+            title="CardDemo - Aplicación de demostración de tarjetas"
+            subtitle="Modernización de mainframe"
+            showNavigation={false}
+          />
+          
+          {/* ✅ NUEVO: Botón de documentación discreto en el header */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              zIndex: 10,
+            }}
+          >
+            <Tooltip title="Ver documentación" arrow>
+              <IconButton
+                onClick={handleOpenDocs}
+                size="small"
+                sx={{
+                  color: 'text.secondary',
+                  backgroundColor: alpha(theme.palette.background.paper, 0.8),
+                  backdropFilter: 'blur(4px)',
+                  border: `1px solid ${alpha(theme.palette.divider, 0.3)}`,
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                    color: 'primary.main',
+                    borderColor: 'primary.main',
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                }}
+              >
+                <MenuBook fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
 
         <Paper
           elevation={3}
@@ -228,13 +270,13 @@ export default function LoginPage() {
                 fontFamily: 'monospace',
                 fontSize: '0.75rem',
                 lineHeight: 1.2,
-                whiteSpace: 'pre', // ✅ Preserva espacios y saltos de línea
-                textAlign: 'center', // ✅ CAMBIO: De 'left' a 'center' para centrar el billete
-                overflow: 'auto', // ✅ Permite scroll horizontal si es necesario
-                backgroundColor: 'rgba(0,0,0,0.1)', // ✅ Fondo sutil para mejor contraste
-                display: 'flex', // ✅ NUEVO: Flexbox para mejor control del centrado
-                justifyContent: 'center', // ✅ NUEVO: Centra horizontalmente
-                alignItems: 'center', // ✅ NUEVO: Centra verticalmente
+                whiteSpace: 'pre',
+                textAlign: 'center',
+                overflow: 'auto',
+                backgroundColor: 'rgba(0,0,0,0.1)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
               {`+========================================+
@@ -249,6 +291,7 @@ export default function LoginPage() {
             </Box>
           </Box>
 
+          {/* Resto del componente sin cambios... */}
           <Box sx={{ p: 4 }}>
             <Typography
               variant="h6"

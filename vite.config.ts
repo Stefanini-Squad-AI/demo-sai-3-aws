@@ -7,7 +7,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: "/demo-sai-3-aws/", // ⭐ CORREGIDO: nombre real del repositorio
+    // ✅ Base diferente según el entorno
+    base: isDevelopment ? "/" : "/demo-sai-3-aws/",
     resolve: {
       alias: {
         "~": resolve(__dirname, "./app"),
