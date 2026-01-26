@@ -4,10 +4,10 @@
 **Propósito:** Fuente única de verdad para crear historias de usuario estructuradas del módulo de Cuentas
 
 ## 📊 Estadísticas de la Plataforma
-- **Módulos:** 1 módulo documentado (Cuentas)
-- **Reutilización:** 85% componentes reutilizables (hooks, servicios, validaciones)
-- **APIs:** 100% endpoints documentados (4 endpoints públicos)
-- **Idiomas:** 1 idioma soportado (inglés - i18n pendiente)
+- **Módulos:** 2 módulos documentados (Cuentas + Administration Menu)
+- **Reutilización:** 85% componentes reutilizables (hooks, servicios, validaciones) – el módulo de Administración aprovecha los mismos hooks y patrones de vista/edición.
+- **APIs:** 100% endpoints documentados (8 endpoints públicos entre cuentas y administración)
+- **Idiomas:** 1 idioma soportado (inglés) con documentación en español (i18n pendiente)
 
 ## 🏗️ Arquitectura de Alto Nivel
 
@@ -65,8 +65,36 @@
 
 - **Ejemplos US:**
   - Como **representante de servicio al cliente**, quiero **buscar una cuenta por su ID de 11 dígitos** para **visualizar rápidamente el estado financiero completo del cliente**
-  - Como **administrador de cuentas**, quiero **actualizar el límite de crédito de una cuenta** para **ajustar la capacidad de gasto del cliente según su perfil de riesgo**
-  - Como **oficial de cumplimiento**, quiero **ver datos enmascarados de SSN y número de tarjeta** para **proteger información sensible durante consultas de rutina**
+- Como **administrador de cuentas**, quiero **actualizar el límite de crédito de una cuenta** para **ajustar la capacidad de gasto del cliente según su perfil de riesgo**
+- Como **oficial de cumplimiento**, quiero **ver datos enmascarados de SSN y número de tarjeta** para **proteger información sensible durante consultas de rutina**
+
+### ADMINISTRATION MENU
+- **ID:** administration-menu
+- **Propósito:** Centralizar las operaciones de seguridad y administración de usuarios (lista, creación, edición y borrado) desde el menú CADM que sustituyó al programa `COADM01C`.
+- **Componentes clave:**
+  - `MenuScreen.tsx` junto con `getAdminMenuData` (en `app/data/menuData.ts`) renderiza el menú con opciones numeradas y maneja `F3/Escape` para salir o cerrar sesión usando `logoutUser`.
+  - `UserListScreen.tsx` reimplementa el patrón del mainframe: búsqueda por texto, tabla con chips de selección, comandos `Enter`, `F7/F8` y acciones `U/D`, todo con `SystemHeader`.
+  - `UserAddScreen.tsx` presenta un formulario con campos `userId`, `password`, `userType`, `firstName` y `lastName`, validaciones inline y toggles de visibilidad de contraseña.
+  - `UserUpdateScreen.tsx` trae los datos desde `userId` en la query string, evita guardados si no hay cambios y exige `F5` para disparar la mutación.
+  - `UserDeleteScreen.tsx` carga el usuario seleccionado para confirmar la eliminación y respeta atajos como `F3` para volver al listado y `F5` para eliminar.
+  - Hooks `useUserList`, `useUserAdd`, `useUserUpdate` y `useUserDelete` encapsulan validaciones (IDs de 8 caracteres, passwords exactos, tipos `A/U`), navegación (`navigate('/admin/users/...')`) y mensajería (`Alert` y `Snackbar`).
+  - `UserApiAdapter` + `apiClient` traducen las peticiones al backend real o a MSW, incluyendo lógica de adaptadores (`process-selection`, paginación, creación, actualización y eliminación).
+- **APIs públicas:**
+  - `GET /api/users/list` - Lista paginada con `searchUserId`, `pageNumber`, `direction` y metadata para las flechas F7/F8.
+  - `POST /api/users/process-selection` - Procesa las acciones `U`/`D` enviadas desde la tabla y devuelve `redirectUrl`.
+  - `GET /api/users/previous-page` - Retrocede página cuando el operador presiona F7 (usa `firstUserId` y `currentPage`).
+  - `GET /api/users/next-page` - Avanza página cuando el operador presiona F8 (usa `lastUserId`, `currentPage` y `hasNextPage`).
+  - `POST /api/users` - Añade usuarios nuevos con payload `{ userId, firstName, lastName, password, userType }`.
+  - `GET /api/users/{userId}` - Trae el detalle para editar o eliminar (se usa en `UserUpdateScreen` y `UserDeleteScreen`).
+  - `PUT /api/users/{userId}` - Guarda cambios validados de nombre, apellido, contraseña y tipo (`UserUpdateRequest`).
+  - `DELETE /api/users/{userId}` - Elimina el registro y devuelve un mensaje de confirmación.
+- **Entidades de datos:**
+  - `UserSecurityData` / `UserUpdateData` / `UserAddRequest` describen el perfil y payloads usados en los hooks y APIs del módulo de administración.
+- **Ejemplos US:**
+  - Como **administrador de seguridad**, quiero listar usuarios, marcar `U` o `D` y presionar Enter para ir a la edición o eliminación sin perder el contexto del menú.
+  - Como **analista**, quiero crear un usuario nuevo con ID y contraseña de 8 caracteres y rol `A`/`U` para cumplir auditorías internas.
+  - Como **responsable de operaciones**, quiero editar un usuario existente, corregir su nombre/rol y guardar con F5 para disparar la validación del backend.
+  - Como **auditor**, quiero eliminar un usuario solo después de confirmar que su `userId` existe y recibir el mensaje de éxito antes de regresar a la lista.
 
 ## 🔄 Diagrama de Arquitectura
 
@@ -255,6 +283,30 @@ export interface AccountViewResponse {
 }
 ```
 
+### UserSecurityData y UserUpdateData (DTO TypeScript)
+```typescript
+export interface UserSecurityData {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  userType: 'A' | 'U' | 'R';
+  createdDate?: string;
+  lastLoginDate?: string;
+  isActive?: boolean;
+}
+
+export interface UserUpdateData {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  userType: 'A' | 'U';
+  password?: string;
+  createdDate?: string;
+  lastLoginDate?: string;
+  isActive?: boolean;
+}
+```
+
 ## 📋 Reglas de Negocio por Módulo
 
 ### CUENTAS - Reglas
@@ -295,6 +347,15 @@ export interface AccountViewResponse {
 - **RN-022**: No se permite cambiar el Account ID una vez creado (campo inmutable)
 - **RN-023**: No se permite cambiar el Customer ID una vez creado (campo inmutable)
 - **RN-024**: El Group ID debe mantener consistencia entre Account y relaciones
+
+### ADMINISTRATION MENU - Reglas
+- **RN-AM-001**: `userId` debe enviarse en mayúsculas, no puede estar vacío ni exceder 8 caracteres (validado en `useUserAdd`, `useUserUpdate` y `useUserDelete`).
+- **RN-AM-002**: `password` es obligatorio; en creación se permite hasta 8 caracteres y en actualización debe tener exactamente 8 caracteres con posibilidad de mostrar/ocultar la contraseña.
+- **RN-AM-003**: `userType` solo acepta `A` (admin) o `U` (usuario) y se transforma a mayúsculas antes de enviarlo al backend.
+- **RN-AM-004**: F3/Escape regresa al menú de administración (`navigate('/menu/admin')`) y `logoutUser` se dispara al cerrar sesión o al salir desde `MenuScreen`.
+- **RN-AM-005**: ENTER procesa la primera selección válida `U/D`, F7/F8 solo avanzan si existen páginas previas/siguientes y muestran errores cuando no se puede seguir.
+- **RN-AM-006**: F4 limpia el formulario en la pantalla de creación, F5 guarda sólo cuando hay cambios detectados y F12 emula salida del sistema.
+- **RN-AM-007**: Antes de borrar un usuario se debe cargar su información (`GET /api/users/{userId}`) y solo se ejecuta `DELETE` después de confirmar el mensaje de alerta.
 
 ## 🌐 Internacionalización
 
@@ -641,6 +702,9 @@ export function useAccountView() {
 - **Respuesta API actualización:** < 1s (P95) para operaciones transaccionales
 - **Cache hit ratio:** No aplicable (queries directas a BD sin cache)
 - **Queries por pantalla:** 3 queries máximo (CardXref + Account + Customer)
+- **Respuesta API lista de usuarios:** < 400ms (P95) para `GET /api/users/list`
+- **Procesamiento de selección:** < 300ms para `POST /api/users/process-selection` y navegación inmediata al módulo correspondiente
+- **Actualización y eliminación:** < 500ms (P95) para `PUT /api/users/{userId}` y `DELETE /api/users/{userId}` con confirmación visual
 
 ## 🚨 Consideraciones de Preparación
 
@@ -660,6 +724,14 @@ export function useAccountView() {
 - **RIESGO-004: Sincronización con sistemas legacy**
   - **Descripción:** Si existen sistemas COBOL aún operando, puede haber inconsistencia
   - **Mitigación:** Confirmar estado de decommission de COACTVWC.CBL y COACTUPC.CBL
+
+- **RIESGO-005: Dependencia de endpoints `/users`**
+  - **Descripción:** El módulo de administración no puede funcionar si los endpoints `/api/users` y `/api/users/list` cambian sin coordinación.
+  - **Mitigación:** Versionar los contratos del `UserApiAdapter`, mantener MSW actualizado y documentar `POST /api/users/process-selection` en Swagger.
+
+- **RIESGO-006: Validaciones de teclas (F5/F7/F8)**
+  - **Descripción:** Cambios en la experiencia de teclado (F5 guarda, F7/F8 paginan) pueden romper el flujo esperado de operadores bancarios.
+  - **Mitigación:** Agregar pruebas de integración que simulan los key handlers y documentar la secuencia `ENTER → acción`, `F3 → salida`, `F4 → limpiar`.
 
 ### Deuda Técnica
 - **DEUDA-001: Sin internacionalización**
@@ -691,6 +763,7 @@ export function useAccountView() {
 - [x] TASK-008: Implementación de mascarado de datos sensibles - Estado: completado
 - [x] TASK-009: Validaciones de negocio en AccountValidationService - Estado: completado
 - [x] TASK-010: Configuración de MSW para testing en desarrollo - Estado: completado
+- [x] TASK-019: Documentación del módulo Administration Menu y guía específica (docs/system-overview + site/modules) - Estado: completado
 
 ### Pendiente
 - [ ] TASK-011: Implementar i18n con soporte para español - Estado: pendiente - Prioridad: ALTA
@@ -701,6 +774,7 @@ export function useAccountView() {
 - [ ] TASK-016: Optimizar queries con índices en PostgreSQL - Estado: pendiente
 - [ ] TASK-017: Implementar caché Redis para búsquedas frecuentes - Estado: pendiente
 - [ ] TASK-018: Habilitar validaciones COBOL comentadas o reemplazarlas - Estado: pendiente
+- [ ] TASK-020: Crear suites de pruebas automáticas para flujos del módulo Administration Menu (F5, paginación, validaciones) - Estado: pendiente
 
 ### Obsoleto
 - [~] TASK-901: Mantener programas COBOL COACTVWC y COACTUPC - Estado: obsoleto (migrados a Java)

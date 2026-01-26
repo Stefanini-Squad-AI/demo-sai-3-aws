@@ -115,7 +115,7 @@
         </header>
 
         <section class="stats">
-            <div class="stat-card"><h3>1</h3><p>Módulo Documentado</p></div>
+            <div class="stat-card"><h3>2</h3><p>Módulos Documentados</p></div>
             <div class="stat-card"><h3>100%</h3><p>APIs Documentadas</p></div>
             <div class="stat-card"><h3>85%</h3><p>Componentes Reutilizables</p></div>
             <div class="stat-card"><h3>95%</h3><p>Precisión del Codebase</p></div>
@@ -123,14 +123,17 @@
 
         <section class="section">
             <h2>🎯 Acceso Rápido</h2>
-            <div style="background: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; border-radius: 8px;">
-                <p>📋 <a href="../system-overview.md" style="color: #667eea; text-decoration: none; font-weight: 600; font-size: 1.1em;">Resumen Completo del Sistema</a></p>
-                <p style="margin-top: 10px; color: #666;">
-                    Fuente única de verdad para crear historias de usuario estructuradas. 
-                    Incluye arquitectura, modelos de datos, reglas de negocio y patrones.
-                </p>
-            </div>
-        </section>
+        <div style="background: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; border-radius: 8px;">
+            <p>📋 <a href="../system-overview.md" style="color: #667eea; text-decoration: none; font-weight: 600; font-size: 1.1em;">Resumen Completo del Sistema</a></p>
+            <p style="margin-top: 10px; color: #666;">
+                Fuente única de verdad para crear historias de usuario estructuradas. 
+                Incluye arquitectura, modelos de datos, reglas de negocio y patrones.
+            </p>
+            <p style="margin-top: 10px; color: #666;">
+                📌 <a href="modules/administration-menu/index.html" style="color: #667eea; text-decoration: none; font-weight: 600;">Guía del módulo Administration Menu</a> en español con flujos, reglas y teclas dedicadas.
+            </p>
+        </div>
+    </section>
 
         <section class="section">
             <h2>📦 Módulos del Sistema</h2>
@@ -147,6 +150,19 @@
                     <p><strong>Componentes:</strong> 7 principales</p>
                     <p><strong>Origen:</strong> Migrado desde COBOL</p>
                     <a href="modules/accounts/index.html">Guía de Desarrollo →</a>
+                </div>
+
+                <div class="module-card">
+                    <h3 style="font-size: 1.8em; margin-bottom: 15px;">📦 Administration Menu</h3>
+                    <p><strong>Propósito:</strong> Panel de seguridad para listar, crear, editar y borrar usuarios con atajos de teclado (F3, F5, F7, F8).</p>
+                    <div style="margin-top: 15px;">
+                        <span class="badge">Seguridad</span>
+                        <span class="badge">Usuarios</span>
+                        <span class="badge">Teclado F5</span>
+                    </div>
+                    <p style="margin-top: 15px;"><strong>APIs:</strong> 8 endpoints documentados (listas, selección, CRUD, paginación).</p>
+                    <p><strong>Componentes:</strong> Menu, listado, alta, edición, eliminación, hooks y adaptador (`UserApiAdapter`).</p>
+                    <a href="modules/administration-menu/index.html">Guía de Desarrollo →</a>
                 </div>
                 
                 <div class="module-card" style="background: linear-gradient(135deg, #868f96 0%, #596164 100%); opacity: 0.6;">
