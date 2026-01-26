@@ -27,29 +27,20 @@ const UserAddPage = React.lazy(() => import('./pages/UserAddPage'));
 const UserUpdatePage = React.lazy(() => import('./pages/UserUpdatePage'));
 const UserDeletePage = React.lazy(() => import('./pages/UserDeletePage'));
 
-// Componente para redirección inteligente
+// Componente para redirección inteligente desde la raíz o rutas no encontradas
 function SmartRedirect() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectCurrentUser);
   const location = useLocation();
 
+  // Si no está autenticado, enviar a login
   if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Si está en la raíz, redirigir al menú apropiado
-  if (location.pathname === '/') {
-    const defaultPath = user.role === 'admin' ? '/menu/admin' : '/menu/main';
-    return <Navigate to={defaultPath} replace />;
-  }
-
-  // Si está autenticado pero en login, redirigir al menú apropiado
-  if (location.pathname === '/login') {
-    const defaultPath = user.role === 'admin' ? '/menu/admin' : '/menu/main';
-    return <Navigate to={defaultPath} replace />;
-  }
-
-  return <Navigate to="/login" replace />;
+  // Si está autenticado, redirigir al menú apropiado según su rol
+  const defaultPath = user.role === 'admin' ? '/menu/admin' : '/menu/main';
+  return <Navigate to={defaultPath} replace />;
 }
 
 function AppContent() {
@@ -199,7 +190,8 @@ function AppContent() {
             } 
           />
           
-          <Route path="*" element={<NotFoundPage />} />
+          {/* Catch-all: redirigir según autenticación */}
+          <Route path="*" element={<SmartRedirect />} />
         </Routes>
       </React.Suspense>
     </ErrorBoundary>

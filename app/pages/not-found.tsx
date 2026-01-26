@@ -1,6 +1,9 @@
 import { Container, Box, Typography, Button, Paper } from "@mui/material";
 import { ErrorOutline, Home } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "~/store/hooks";
+import { selectIsAuthenticated, selectCurrentUser } from "~/features/auth/authSlice";
+import { useEffect } from "react";
 
 export function meta() {
   return [
@@ -13,6 +16,21 @@ export function meta() {
 }
 
 export default function NotFoundPage() {
+  const navigate = useNavigate();
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const user = useAppSelector(selectCurrentUser);
+
+  useEffect(() => {
+    // Redirigir automáticamente según estado de autenticación
+    if (!isAuthenticated || !user) {
+      navigate('/login', { replace: true });
+    } else {
+      const defaultPath = user.role === 'admin' ? '/menu/admin' : '/menu/main';
+      navigate(defaultPath, { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  // Renderizar brevemente mientras se redirige
   return (
     <Container maxWidth="md">
       <Box
@@ -43,20 +61,8 @@ export default function NotFoundPage() {
             404
           </Typography>
           <Typography variant="h5" gutterBottom>
-            Page Not Found
+            Redirecting...
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-            The page you're looking for doesn't exist or has been moved.
-          </Typography>
-          <Button
-            component={Link}
-            to="/"
-            variant="contained"
-            size="large"
-            startIcon={<Home />}
-          >
-            Go Home
-          </Button>
         </Paper>
       </Box>
     </Container>
