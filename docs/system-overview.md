@@ -4,9 +4,9 @@
 **Propósito:** Fuente única de verdad para crear historias de usuario estructuradas del módulo de Cuentas
 
 ## 📊 Estadísticas de la Plataforma
-- **Módulos:** 1 módulo documentado (Cuentas)
+- **Módulos:** 2 módulos documentados (Cuentas + Menú de Administración)
 - **Reutilización:** 85% componentes reutilizables (hooks, servicios, validaciones)
-- **APIs:** 100% endpoints documentados (4 endpoints públicos)
+- **APIs:** 100% endpoints documentados (9 endpoints públicos)
 - **Idiomas:** 1 idioma soportado (inglés - i18n pendiente)
 
 ## 🏗️ Arquitectura de Alto Nivel
@@ -66,7 +66,33 @@
 - **Ejemplos US:**
   - Como **representante de servicio al cliente**, quiero **buscar una cuenta por su ID de 11 dígitos** para **visualizar rápidamente el estado financiero completo del cliente**
   - Como **administrador de cuentas**, quiero **actualizar el límite de crédito de una cuenta** para **ajustar la capacidad de gasto del cliente según su perfil de riesgo**
-  - Como **oficial de cumplimiento**, quiero **ver datos enmascarados de SSN y número de tarjeta** para **proteger información sensible durante consultas de rutina**
+- Como **oficial de cumplimiento**, quiero **ver datos enmascarados de SSN y número de tarjeta** para **proteger información sensible durante consultas de rutina**
+
+### MENÚ DE ADMINISTRACIÓN (Administration Menu)
+- **ID:** admin-menu
+- **Propósito:** Operaciones críticas de seguridad que reemplazan al módulo COBOL `COADM01C`, exponiendo las operaciones User List / Add / Update / Delete exclusivamente para administradores.
+- **Componentes clave:**
+  - `AdminMenuPage.tsx` + `MenuScreen` – validan `role === 'admin'`, cargan `getAdminMenuData()` y controlan las teclas legacy (ENTER/F3).
+  - `UserListScreen.tsx` + `useUserList.ts` – Tabla con Select de acción (`U`/`D`), paginación F7/F8 y procesamiento de ENTER como en el mainframe.
+  - `UserAddScreen.tsx` / `useUserAdd.ts` – Formulario con validaciones estrictas (max 8 caracteres, uppercase) y flujos F3/F4/F5/F12.
+  - `UserUpdateScreen.tsx` / `useUserUpdate.ts` – Carga por `userId`, modo edición y guardado transaccional.
+  - `UserDeleteScreen.tsx` / `useUserDelete.ts` – Confirmación explícita y validación del último admin antes de eliminar.
+  - `UserApiAdapter` y `apiClient` – Transforman request/responses entre frontend y backend real (o mocks).
+  - `ProtectedRoute` + `SystemHeader` – Garantizan seguridad de rol `admin` y trazabilidad por `transactionId` (CU00, CU02).
+
+- **APIs públicas:**
+  - `GET /api/users/list?pageNumber={n}&direction=FORWARD&startUserId={opcional}` - Lista paginada de usuarios de seguridad.
+  - `POST /api/users/process-selection` - Convierte la opción `U`/`D` en una redirección a update/delete.
+  - `POST /api/users` - Alta de usuario con campos `userId`, `firstName`, `lastName`, `password`, `userType`.
+  - `GET /api/users/{userId}` - Obtiene datos para edición o baja.
+  - `PUT /api/users/{userId}` - Actualiza nombre, apellido, contraseña y tipo.
+  - `DELETE /api/users/{userId}` - Elimina el usuario si hay otros administradores activos.
+
+- **Ejemplos US:**
+  - Como **administrador de seguridad**, quiero **buscar un `userId` y seleccionar `U` con ENTER** para **editar datos sin salir de la lista**.
+  - Como **oficial de seguridad**, quiero **crear `USER1234` con password de 8 caracteres y tipo `U`** para **mantener las restricciones del legacy**.
+  - Como **administrador**, quiero **eliminar un usuario solo si queda otro admin activo** para **evitar bloquear el sistema**.
+  - Como **auditor**, quiero **usar F3 para regresar y F7/F8 para iterar páginas** para **replicar la experiencia del sistema original**.
 
 ## 🔄 Diagrama de Arquitectura
 
@@ -255,6 +281,35 @@ export interface AccountViewResponse {
 }
 ```
 
+### UserSecurityData (DTO TypeScript)
+```typescript
+export interface UserSecurityData {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  userType: 'A' | 'U' | 'R';
+  createdDate?: string;
+  lastLoginDate?: string;
+  isActive?: boolean;
+}
+
+export interface UserListRequest {
+  searchUserId?: string;
+  page: number;
+  limit: number;
+  startUserId?: string;
+  pageNumber?: number;
+  direction?: 'FORWARD' | 'BACKWARD';
+}
+
+export interface UserSelectionAction {
+  action: 'U' | 'D';
+  userId: string;
+  selectedUserId?: string;
+  selectionFlag?: string;
+}
+```
+
 ## 📋 Reglas de Negocio por Módulo
 
 ### CUENTAS - Reglas
@@ -296,10 +351,19 @@ export interface AccountViewResponse {
 - **RN-023**: No se permite cambiar el Customer ID una vez creado (campo inmutable)
 - **RN-024**: El Group ID debe mantener consistencia entre Account y relaciones
 
+### MENÚ DE ADMINISTRACIÓN - Reglas
+- **RB-ADM-001:** Solo usuarios con `role === 'admin'` pueden navegar a `/menu/admin` y a cualquier ruta `/admin/users/*` (ver `ProtectedRoute` y `AdminMenuPage`).
+- **RB-ADM-002:** `userId` debe ser mayúsculas, alfanumérico, máximo 8 caracteres y no puede quedar vacío (validado en `useUserAdd` y `UserUpdateScreen`).
+- **RB-ADM-003:** `password` es obligatorio y comparte el límite de 8 caracteres tanto en creaciones como actualizaciones.
+- **RB-ADM-004:** `userType` solo acepta `A` o `U`; cualquier otro valor dispara el mensaje `User Type must be A (Admin) or U (User)`.
+- **RB-ADM-005:** Las acciones `U`/`D` se validan en `useUserList.handleUserAction` antes de navegar; si no hay selección válida se interpreta como búsqueda.
+- **RB-ADM-006:** No se permite eliminar al último administrador (`userDeleteHandlers` bloquea la operación con error `Cannot delete administrator users.`).
+- **RB-ADM-007:** Las teclas legacy (ENTER, F3, F4, F5, F7, F8, F12) mantienen el flujo original en las pantallas administrativas.
+
 ## 🌐 Internacionalización
 
 ### Estado Actual
-**⚠️ NO IMPLEMENTADO** - El módulo de cuentas actualmente NO tiene internacionalización.
+**⚠️ NO IMPLEMENTADO** - El módulo de cuentas y el Menú de Administración actualmente NO tienen internacionalización.
 
 ### Pendiente de Implementación
 Cuando se implemente i18n, se recomienda la siguiente estructura:
@@ -376,9 +440,9 @@ src/frontend/src/i18n/
 - **Patrón de cambios:** Comparación JSON.stringify() del estado original vs actual
 
 #### Listas
-- **Componente de tabla:** No aplica al módulo de cuentas (vista/edición individual)
-- **Búsqueda:** Campo de entrada único con validación regex en tiempo real
-- **Feedback:** Material-UI Snackbar para notificaciones
+- **Componente de tabla:** `UserListScreen` presenta una tabla con Select por fila (`U`/`D`), rellena hasta 10 filas y respeta F7/F8; la vista/edición de cuentas no necesita tabla.
+- **Búsqueda:** Campo `Search User ID` que sincroniza con `useUserList` y activa `handleSearch` al ENTER (como `PROCESS-ENTER-KEY`).
+- **Feedback:** Alerts y Snackbar (Material-UI) describen errores como `Invalid selection` o `Cannot delete administrator users`.
 
 #### Notificaciones
 - **Sistema:** Material-UI Alert + Snackbar
@@ -608,6 +672,15 @@ export function useAccountView() {
 
 4. Como **oficial de cumplimiento**, quiero **que el SSN siempre se almacene enmascarado** para **cumplir con regulaciones de privacidad (PCI-DSS)**
 
+#### GESTIÓN DE USUARIOS (Menú de Administración)
+**Patrón:** Como [administrador], quiero [controlar usuarios con teclas legacy] para [mantener seguridad y trazabilidad]
+
+**Ejemplos:**
+1. Como **administrador de seguridad**, quiero **seleccionar `U` y darle ENTER desde la lista** para **editar sin salir del menú administrativo**
+2. Como **oficial de seguridad**, quiero **crear un usuario con `userType` A o U y contraseña de 8 caracteres** para **cumplir con las mismas restricciones del sistema original**
+3. Como **supervisor de seguridad**, quiero **usar F7/F8 para paginar y F3 para regresar al menú** para **mantener la experiencia del mainframe**
+4. Como **auditor**, quiero **que el módulo bloquee la eliminación si solo queda un admin** para **evitar perder el acceso de emergencia**
+
 ### Complejidad de Historias
 - **Simple (1-2 pts):** Operaciones CRUD con patrones existentes (ej: buscar cuenta, mostrar datos)
 - **Medio (3-5 pts):** Lógica de negocio + validación compleja (ej: actualización transaccional, validaciones multi-campo)
@@ -712,5 +785,5 @@ export function useAccountView() {
 - **Seguridad:** 100% de datos sensibles enmascarados por defecto
 - **Impacto:** 40% reducción en tiempo promedio de consulta vs interfaz COBOL legacy
 
-**Última actualización:** 2026-01-21  
+**Última actualización:** 2026-02-15  
 **Precisión codebase:** 95% (basado en análisis de código fuente real del repositorio)
