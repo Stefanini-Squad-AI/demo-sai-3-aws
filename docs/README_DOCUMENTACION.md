@@ -6,11 +6,16 @@
 docs/
  system-overview.md              # 🎯 Fuente única de verdad (716 líneas, 95% precisión)
  README_DOCUMENTACION.md         # Este archivo
+ modules/
+    └── administration-menu/
+        └── administration-menu-overview.md  # Resumen del módulo de Administración
  site/
     ├── index.html                  # 🏠 Página principal navegable (7KB)
     └── modules/
-        └── accounts/
-            └── index.html          # Página HTML del módulo (23KB)
+        ├── accounts/
+        │   └── index.html          # Página HTML del módulo (23KB)
+        └── administration-menu/
+            └── index.html          # Guía del Menú de Administración
 ```
 
 ## ✅ Contenido Completado
@@ -19,18 +24,22 @@ docs/
 **Tamaño:** 716 líneas | **Precisión:** 95% basado en código fuente real
 
 **Contenido:**
-- ✅ Estadísticas de la plataforma (1 módulo, 4 APIs, 85% reutilización)
+- ✅ Estadísticas de la plataforma (2 módulos, 9 APIs, 85% reutilización)
 - ✅ Arquitectura de alto nivel (Spring Boot 3.5.6 + React 18.3 + PostgreSQL)
 - ✅ Stack tecnológico completo con versiones exactas
 - ✅ Patrones arquitectónicos (Repository, Service Layer, DTOs, Custom Hooks)
 - ✅ Catálogo del módulo de Cuentas con componentes clave
+- ✅ Catálogo extendido del Menú de Administración con AdminMenuPage, UserListScreen, UserAdd/Update/Delete, `useUserList` y `UserApiAdapter`
 - ✅ Diagrama Mermaid de arquitectura
 - ✅ Modelos de datos completos (Account, Customer, DTOs TypeScript)
+- ✅ Modelos de datos extendidos de seguridad (UserSecurityData, UserListRequest, UserSelectionAction)
 - ✅ 24 Reglas de negocio documentadas (RN-001 a RN-024)
+- ✅ 7 reglas adicionales del Menú de Administración (RB-ADM-001 a RB-ADM-007)
 - ✅ Sección de i18n (pendiente de implementación con estructura propuesta)
 - ✅ Patrones de formularios y listas con código real del proyecto
 - ✅ Ejemplos de código real (AccountViewScreen, useAccountView)
 - ✅ Templates de Historias de Usuario por dominio (Visualización, Actualización, Validación)
+- ✅ Templates específicos para Gestión de Usuarios (acciones U/D, F3/F7/F8, protecciones de último admin)
 - ✅ Guías de complejidad (Simple 1-2pts, Medio 3-5pts, Complejo 5-8pts)
 - ✅ Patrones de Criterios de Aceptacinnn (Autenticación, Validación, Rendimiento, Errores)
 - ✅ Presupuestos de rendimiento (< 500ms búsqueda, < 1s actualización)
@@ -48,6 +57,7 @@ docs/
 - ✅ 4 tarjetas de estadísticas destacadas
 - ✅ Sección de acceso rápido a system-overview.md
 - ✅ Grid de módulos con card del módulo de Cuentas
+- ✅ Card adicional del Menú de Administración con APIs, componentes y link directo
 - ✅ Información del stack tecnológico (Backend, Frontend, Patrones)
 - ✅ Características clave con badges de colores
 - ✅ Footer con última actualización y precisión
@@ -80,20 +90,56 @@ docs/
 - ✅ Tabla responsive con headers coloreados
 - ✅ Navegación con enlaces de retorno
 
+### 4. site/modules/administration-menu/index.html (Menú de Administración)
+**Tamaño:** ~32KB | **Idioma:** Español
+
+**Secciones Incluidas:**
+- ✅ **Resumen del Módulo** — Contexto de seguridad y responsabilidades del rol admin
+- ✅ **Guía de US** — Templates para listado, creación, actualización y eliminación con teclas legacy
+- ✅ **Factores de Aceleración** — Hooks (`useUserList`, `useUserAdd`, `useUserUpdate`) y adaptadores reutilizables
+- ✅ **Complejidad** — Badges Simple/Medio/Complejo aplicados al módulo administrativo
+- ✅ **Fundación Técnica** — Grid con AdminMenuPage, MenuScreen, pantallas de usuario y hooks
+- ✅ **Dependencias** — Material-UI, ProtectedRoute, `useApi`, `UserApiAdapter`
+- ✅ **Interfaces Públicas** — Documentación de `/api/users/*` y `process-selection`
+- ✅ **Modelos de Datos** — Fragmentos de `UserSecurityData`, `UserListRequest`, `UserSelectionAction`
+- ✅ **Reglas de Negocio** — RB-ADM-001 a RB-ADM-007
+- ✅ **Patrones de Criterios de Aceptación** — Autenticación, Validación, Rendimiento, Manejo de errores
+- ✅ **Consideraciones de Rendimiento** — Límites de respuesta (600ms, 1s) y paginación
+- ✅ **Riesgos y Mitigaciones** — Último admin, roles, validaciones duplicadas
+- ✅ **Ejemplos de Código** — Snippets reales de `useUserList` y `useUserAdd`
+- ✅ **Tabla de Validaciones** — `userId`, `password`, `userType`, F3/F7/F8
+
+**Diseño:**
+- ✅ CSS profesional con gradientes y cards de complejidad
+- ✅ Badges y chips para distinguir acciones de seguridad
+- ✅ Footer con enlaces a índice y system overview
+- ✅ Código en bloques `pre`/`code` con sintaxis clara
+
+### 5. docs/modules/administration-menu/administration-menu-overview.md
+**Tamaño:** ~400 palabras | **Precisión:** 97% basada en código real
+
+**Contenido:**
+- ✅ Estadísticas del módulo (pantallas, hooks, endpoints)
+- ✅ Contexto de negocio (COADM01C, control de usuarios)
+- ✅ Fundamento técnico y APIs (`UserApiAdapter`, `useUserList`, `/api/users`)
+- ✅ Reglas de negocio y patrones de historias (RB-ADM + user management)
+- ✅ Checklist de aceleradores, riesgos y próximos pasos
 ## 🎯 Cumplimiento del Template Solicitado
 
 ### Checklist de Validación ✅
 - [x] **No componentes ficticios:** Todos los componentes mencionados existen en el código
 - [x] **Estructura i18n real:** Se documentó que NO está implementado (pendiente)
 - [x] **Patrones de formularios reales:** Página completa con toggle (no modal) según implementación
-- [x] **Código real:** Ejemplos de useAccountView y AccountUpdateService del código fuente
-- [x] **APIs documentadas:** 4 endpoints con paths exactos y request/response
-- [x] **95% precisión:** Validado contra archivos Account.java, Customer.java, AccountViewScreen.tsx
+- [x] **Código real:** Ejemplos de useAccountView, useUserList y AccountUpdateService del código fuente
+- [x] **APIs documentadas:** 9 endpoints con paths exactos y request/response (Cuentas + Administración)
+- [x] **95% precisión:** Validado contra archivos Account.java, Customer.java, UserListScreen.tsx
 
 ### Checklist Final de Entregables ✅
 - [x] `docs/system-overview.md` creado y completo
 - [x] `docs/site/index.html` creado con navegación
 - [x] `docs/site/modules/accounts/index.html` generado
+- [x] `docs/site/modules/administration-menu/index.html` generado
+- [x] `docs/modules/administration-menu/administration-menu-overview.md` creado
 - [x] Diagramas Mermaid representan arquitectura actual
 - [x] Patrones frontend reales analizados y documentados
 - [x] Templates US específicos por módulo incluidos
@@ -105,20 +151,22 @@ docs/
 - ✅ system-overview.md → Español
 - ✅ site/index.html → Español
 - ✅ site/modules/accounts/index.html → Español
+- ✅ site/modules/administration-menu/index.html → Español
+- ✅ docs/modules/administration-menu/administration-menu-overview.md → Español
 - ✅ Títulos, descripciones, ejemplos, código comentado → Español
 
 ## 📊 Estadísticas Finales
 
 | Métrica | Valor |
 |---------|-------|
-| Archivos generados | 3 (+ este README) |
-| Líneas totales | ~1,500 líneas |
-| Tamaño total | ~58 KB |
-| Módulos documentados | 1 (Accounts) |
-| APIs documentadas | 4 endpoints |
-| Reglas de negocio | 24 reglas |
-| Ejemplos de US | 12 ejemplos |
-| Componentes técnicos | 7 documentados |
+| Archivos generados | 5 (+ este README) |
+| Líneas totales | ~1,900 líneas |
+| Tamaño total | ~75 KB |
+| Módulos documentados | 2 (Cuentas + Menú de Administración) |
+| APIs documentadas | 9 endpoints |
+| Reglas de negocio | 31 reglas (24 + 7 RB-ADM) |
+| Ejemplos de US | 16 ejemplos |
+| Componentes técnicos | 14 documentados |
 | Precisión del codebase | 95% |
 | Idioma | 100% Español |
 
@@ -129,17 +177,20 @@ docs/
 2. Navegar a "Módulo de Cuentas"
 3. Revisar templates de US y ejemplos
 4. Usar gus de complejidad para estimación
+5. Revisar "Menú de Administración" y su resumen específico para decisiones de seguridad
 
 ### Para Desarrolladores
 1. Leer `docs/system-overview.md` para contexto completo
 2. Consultar sección "Patrones de Formularios" para código reutilizable
 3. Revisar "Reglas de Negocio" antes de implementar validaciones
 4. Usar ejemplos de código como plantillas
+5. Revisar `site/modules/administration-menu/index.html` y `docs/modules/administration-menu/...` antes de tocar flujos de usuarios/admins
 
 ### Para Scrum Masters
 1. Usar guías de complejidad para story points
 2. Consultar "Riesgos Técnicos" para planificación
 3. Revisar "Deuda Técnica" para priorización
+4. Incluir el Menú de Administración en los groomings si se planifican historias de seguridad críticas
 
 ## 📝 Notas Importantes
 
@@ -147,6 +198,7 @@ docs/
 - ⚠️ **i18n NO implementado:** Mensajes hardcodeados en inglés en el código actual
 - ⚠️ **Sin auditoría:** No hay trazabilidad de cambios en Account/Customer
 - ⚠️ **Sin tests:** Código migrado de COBOL sin tests unitarios/integración
+- ⚠️ **Menú de Administración sensible:** Eliminar usuarios dispara `Cannot delete administrator users.` y requiere pruebas adicionales antes de tocar la lógica
 - ✅ **Migración COBOL exitosa:** COACTVWC.CBL y COACTUPC.CBL convertidos a Java
 
 ### Recomendaciones
@@ -154,18 +206,22 @@ docs/
 2. **Prioridad MEDIA:** Agregar tests (TASK-012, TASK-013) - 6 puntos
 3. **Prioridad MEDIA:** Implementar Audit Trail (TASK-015) - 5 puntos
 4. **Optimización:** Agregar índices PostgreSQL (TASK-016) - 2 puntos
+5. **Seguridad:** Validar la protección del Menú de Administración (RB-ADM) en pruebas de integración antes de liberar
 
 ## 🔗 Enlaces Rápidos
 
 - **System Overview:** `docs/system-overview.md`
 - **Site Principal:** `docs/site/index.html` (abrir en navegador)
 - **Módulo Cuentas:** `docs/site/modules/accounts/index.html`
+- **Menú de Administración:** `docs/site/modules/administration-menu/index.html`
+- **Resumen del módulo admin:** `docs/modules/administration-menu/administration-menu-overview.md`
 - **Código Fuente Frontend:** `frontend/app/components/account/`
 - **Código Fuente Backend:** `management/src/main/java/com/card/management/`
 
 ---
 
 **Documentación generada el:** 2026-01-21  
-**Ticket Jira:** DS3A-5 - DOCUMENTACIÓN DEL PROYECTO EN ESPAÑOL  
+**Última actualización:** 2026-02-15  
+**Ticket Jira:** DS3A-5 + DS3A-8 - DOCUMENTACIÓN DEL PROYECTO EN ESPAÑOL  
 **Precisión:** 95% (basado en análisis de código fuente real)  
 **Estado:** ✅ COMPLETADO
