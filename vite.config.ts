@@ -1,12 +1,28 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
+import { copyFileSync, cpSync, existsSync, mkdirSync } from "fs";
 
 export default defineConfig(({ mode }) => {
   const isDevelopment = mode === "development";
 
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      // Plugin para copiar la documentación al build
+      {
+        name: 'copy-docs',
+        closeBundle() {
+          const docsSource = resolve(__dirname, 'docs/site');
+          const docsDest = resolve(__dirname, 'dist/docs/site');
+          
+          if (existsSync(docsSource)) {
+            cpSync(docsSource, docsDest, { recursive: true });
+            console.log('✅ Documentation copied to dist/docs/site');
+          }
+        }
+      }
+    ],
     // ✅ Base diferente según el entorno
     base: isDevelopment ? "/" : "/demo-sai-3-aws/",
     resolve: {
