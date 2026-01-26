@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Provider as ReduxProvider } from "react-redux";
+import { Provider as ReduxProvider, useDispatch } from "react-redux";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { store } from "~/store/store";
 import { lightTheme, darkTheme } from "~/theme/theme";
+import { validateToken } from "~/features/auth/authSlice";
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -24,6 +25,39 @@ export const useTheme = () => {
 
 interface AppProvidersProps {
   children: React.ReactNode;
+}
+
+// Componente interno que tiene acceso al dispatch de Redux
+function AuthInitializer({ children }: { children: React.ReactNode }) {
+  const dispatch = useDispatch();
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Inicializar autenticación al cargar la aplicación
+    const initAuth = async () => {
+      const token = localStorage.getItem('auth-token');
+      if (token) {
+        console.log('🔄 Initializing auth with existing token...');
+        try {
+          await dispatch(validateToken() as any);
+          console.log('✅ Auth initialized successfully');
+        } catch (error) {
+          console.error('❌ Auth initialization failed:', error);
+        }
+      }
+      setIsInitialized(true);
+    };
+
+    initAuth();
+  }, [dispatch]);
+
+  // Mostrar children solo después de inicializar
+  // (o inmediatamente si no hay token)
+  if (!isInitialized) {
+    return null; // O un loading spinner si prefieres
+  }
+
+  return <>{children}</>;
 }
 
 export function AppProviders({ children }: AppProvidersProps) {
@@ -83,12 +117,14 @@ export function AppProviders({ children }: AppProvidersProps) {
 
   return (
     <ReduxProvider store={store}>
-      <ThemeContext.Provider value={themeContextValue}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
-      </ThemeContext.Provider>
+      <AuthInitializer>
+        <ThemeContext.Provider value={themeContextValue}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {children}
+          </ThemeProvider>
+        </ThemeContext.Provider>
+      </AuthInitializer>
     </ReduxProvider>
   );
 }

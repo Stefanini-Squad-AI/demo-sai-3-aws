@@ -74,19 +74,15 @@ export default function LoginPage() {
       // Obtener la ruta de destino desde location.state o usar la ruta por defecto
       const from = location.state?.from?.pathname;
       
-      setTimeout(() => {
-        if (from && from !== '/login') {
-          // Si viene de una ruta específica, ir ahí
-          navigate(from, { replace: true });
-        } else {
-          // Redirigir según el rol
-          if (user.role === 'admin') {
-            navigate('/menu/admin', { replace: true });
-          } else {
-            navigate('/menu/main', { replace: true });
-          }
-        }
-      }, 100);
+      // Redirigir según el rol
+      const targetPath = from && from !== '/login' 
+        ? from 
+        : user.role === 'admin' 
+          ? '/menu/admin' 
+          : '/menu/main';
+      
+      console.log('🎯 Redirecting to:', targetPath);
+      navigate(targetPath, { replace: true });
     }
   }, [isAuthenticated, user, navigate, location.state]);
 
