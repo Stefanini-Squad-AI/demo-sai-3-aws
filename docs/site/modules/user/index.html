@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USER - User Management (Admin)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .section { background: white; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #2d3748; }
+        .header h1 { color: white; margin: 0; }
+        .header p { opacity: 0.9; margin: 10px 0 0 0; }
+        code { background: #f7fafc; padding: 2px 6px; border-radius: 3px; color: #e53e3e; }
+        pre { background: #2d3748; color: #fff; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; margin-right: 10px; }
+        footer { text-align: center; padding: 40px 20px; color: #718096; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>👥 USER - User Management (Admin)</h1>
+            <p>User Story Development Guide</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Purpose:</strong> Administrative user management including create, update, delete, and role assignment</p>
+            <p><strong>Business Context:</strong> This module provides comprehensive user administration capabilities for managing back-office users, including creating new users, updating user roles and permissions, deactivating users, and viewing all system users.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <ul>
+                <li><strong>Create User:</strong> As an administrator, I want to create new users so they can access the system</li>
+                <li><strong>Update Roles:</strong> As an administrator, I want to update user roles to manage permissions</li>
+                <li><strong>Deactivate User:</strong> As an administrator, I want to deactivate users who no longer need access</li>
+                <li><strong>View Users:</strong> As an administrator, I want to view all system users to manage the user base</li>
+                <li><strong>Reset Password:</strong> As an administrator, I want to reset user passwords to help users regain access</li>
+            </ul>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>UserListScreen:</strong> Pre-built paginated list with search and filters</li>
+                <li><strong>UserAddScreen:</strong> Form with validation for new user creation</li>
+                <li><strong>UserUpdateScreen:</strong> Form for editing user details and roles</li>
+                <li><strong>UserDeleteScreen:</strong> Confirmation dialog with safety checks</li>
+                <li><strong>Role-Based Access:</strong> Integration with ProtectedRoute for admin-only access</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Display user list, View user details, Basic user search</li>
+                <li><strong>Medium (3-5 pts):</strong> Create user with validation, Update user roles, Deactivate user</li>
+                <li><strong>Complex (5-8 pts):</strong> Bulk user operations, Permission management, Audit trail integration</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <ul>
+                <li><strong>UserListScreen:</strong> Paginated list with filters for status and role</li>
+                <li><strong>UserAddScreen:</strong> Form for creating new users with role selection</li>
+                <li><strong>UserUpdateScreen:</strong> Form for editing existing user details</li>
+                <li><strong>UserDeleteScreen:</strong> Confirmation dialog with deactivation option</li>
+                <li><strong>RoleSelector:</strong> Dropdown for selecting user roles (ADMIN, MANAGER, CSR)</li>
+            </ul>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>React Hook Form:</strong> Form state management</li>
+                <li><strong>API Client:</strong> User management API requests</li>
+                <li><strong>Auth Module:</strong> Role-based access control</li>
+                <li><strong>React Router:</strong> Navigation between list/add/edit screens</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>GET /admin/users/list
+Request: { page: number, pageSize: number, status?: string, role?: string }
+Response: { 
+  users: Array<User>,
+  totalCount: number,
+  currentPage: number,
+  totalPages: number
+}
+
+POST /admin/users/add
+Request: { 
+  userId: string,
+  fullName: string,
+  email: string,
+  userType: string,
+  password: string
+}
+Response: { 
+  success: boolean,
+  userId: string,
+  message: string
+}
+
+PUT /admin/users/update
+Request: { 
+  userId: string,
+  fullName?: string,
+  email?: string,
+  userType?: string,
+  status?: string
+}
+Response: { 
+  success: boolean,
+  updatedUser: User,
+  message: string
+}
+
+DELETE /admin/users/delete
+Request: { userId: string, softDelete?: boolean }
+Response: { 
+  success: boolean,
+  message: string
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>💡 Implementation Examples</h2>
+            
+            <h3>User List with Admin Protection</h3>
+            <pre><code>import { UserListScreen } from '~/features/user/UserListScreen';
+import { ProtectedRoute } from '~/features/auth/ProtectedRoute';
+
+function AdminUserManagement() {
+  return (
+    &lt;ProtectedRoute requiredRole="admin"&gt;
+      &lt;UserListScreen pageSize={20} /&gt;
+    &lt;/ProtectedRoute&gt;
+  );
+}</code></pre>
+
+            <h3>Create New User</h3>
+            <pre><code>import { UserAddScreen } from '~/features/user/UserAddScreen';
+
+function CreateUserPage() {
+  const handleSuccess = (userId) =&gt; {
+    console.log('User created:', userId);
+    navigate('/admin/users');
+  };
+  
+  return (
+    &lt;UserAddScreen
+      onSuccess={handleSuccess}
+      availableRoles={['ADMIN', 'MANAGER', 'CSR', 'VIEWER']}
+    /&gt;
+  );
+}</code></pre>
+
+            <h3>Update User Role</h3>
+            <pre><code>import { UserUpdateScreen } from '~/features/user/UserUpdateScreen';
+
+function EditUserPage({ userId }) {
+  const handleUpdate = async (data) =&gt; {
+    // Update user details and role
+    await updateUser({
+      userId,
+      fullName: data.name,
+      userType: data.role
+    });
+  };
+  
+  return &lt;UserUpdateScreen userId={userId} onSubmit={handleUpdate} /&gt;;
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>✅ Acceptance Criteria Examples</h2>
+            <ul>
+                <li>✓ Only users with ADMIN role can access user management screens</li>
+                <li>✓ User list displays all users with pagination (20 per page)</li>
+                <li>✓ User creation form validates all required fields</li>
+                <li>✓ User ID must be unique (system validates before creation)</li>
+                <li>✓ Email format is validated before submission</li>
+                <li>✓ Password must meet complexity requirements (8+ chars, uppercase, number)</li>
+                <li>✓ Role dropdown shows only available roles</li>
+                <li>✓ User update saves changes and shows confirmation</li>
+                <li>✓ Deactivation requires confirmation dialog</li>
+                <li>✓ Deactivated users cannot log in but data is preserved</li>
+                <li>✓ Search filters by name, email, or user ID</li>
+                <li>✓ Status filter shows active/inactive users</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Index</a></p>
+            <p><em>Last update: 2026-01-26</em></p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,716 +1,782 @@
-# CardDemo - Resumen de Historias de Usuario
+# SAI Application System - Overview for User Stories
 
-**Versión:** 2026-01-21  
-**Propósito:** Fuente única de verdad para crear historias de usuario estructuradas del módulo de Cuentas
+Version: 2026-01-26
+Purpose: Single source of truth for creating well-structured User Stories
 
-## 📊 Estadísticas de la Plataforma
-- **Módulos:** 1 módulo documentado (Cuentas)
-- **Reutilización:** 85% componentes reutilizables (hooks, servicios, validaciones)
-- **APIs:** 100% endpoints documentados (4 endpoints públicos)
-- **Idiomas:** 1 idioma soportado (inglés - i18n pendiente)
+## 📊 Platform Statistics
 
-## 🏗️ Arquitectura de Alto Nivel
+- **Modules**: 9 documented modules
+- **Code Reuse**: 85% reusable components with Material-UI
+- **UI Components**: 50+ available components across modules
+- **API Coverage**: 100% documented endpoints with MSW mocks
+- **Supported Languages**: English (UI ready for i18n expansion)
+- **Testing**: MSW-based mocking system with 10 sample accounts
 
-### Stack Tecnológico
-- **Backend:** Spring Boot 3.5.6 + Java 21
-- **Frontend:** React 18.3.1 + TypeScript 5.4.5 + Vite 5.2.10
-- **Base de datos:** PostgreSQL (runtime)
-- **UI Framework:** Material-UI (MUI) 5.15.15
-- **Estado:** Redux Toolkit 2.2.3
-- **Autenticación:** Spring Security + JWT (jjwt 0.12.6)
-- **Documentación API:** SpringDoc OpenAPI 2.7.0 (Swagger)
-- **Testing:** MSW 2.2.13 (Mock Service Worker)
+## 🏗️ High-Level Architecture
 
-### Patrones Arquitectónicos
-- **Patrón de repositorio:** Spring Data JPA para acceso a datos
-- **Capa de servicio:** Lógica de negocio encapsulada en servicios transaccionales
-- **DTOs:** Separación entre modelos de dominio y transferencia de datos
-- **Custom Hooks:** React hooks para lógica de estado y efectos
-- **Arquitectura en capas:**
-  - Frontend: Page → Component → Hook → Service → API
-  - Backend: Controller → Service → Repository → Entity
-- **Autenticación:** JWT Bearer Token con Spring Security
+### Technology Stack
 
-### Origen del Sistema
-- **Migración COBOL a Java/React:** Sistema modernizado desde CardDemo COBOL
-- **Programas COBOL equivalentes:**
-  - `COACTVWC.CBL` → Account View (Visualización)
-  - `COACTUPC.CBL` → Account Update (Actualización)
-- **Mapas COBOL:** `CACTVWAI`, `CACTVWAO`, `CACTUPI`, `CACTUPO`
+- **Frontend**: React 18.3.1 + TypeScript 5.4.5
+- **State Management**: Redux Toolkit 2.2.3
+- **Routing**: React Router DOM 6.22.3
+- **UI Library**: Material-UI 5.15.15 + Emotion
+- **Build Tool**: Vite 5.2.10
+- **Development**: MSW 2.2.13 for API mocking
+- **Deployment**: Docker + Nginx (production-ready)
 
-## 📚 Catálogo de Módulos
+### Architectural Patterns
 
-### CUENTAS (Accounts)
-- **ID:** accounts
-- **Propósito:** Gestión completa del ciclo de vida de cuentas de tarjetas de crédito, incluyendo visualización de información financiera y actualización de datos de cuenta y cliente
-- **Componentes clave:**
-  - `AccountViewScreen.tsx` - Visualización de cuentas con mascarado de datos sensibles
-  - `AccountUpdateScreen.tsx` - Edición transaccional de cuentas y clientes
-  - `useAccountView.ts` - Hook para búsqueda e inicialización
-  - `useAccountUpdate.ts` - Hook para actualización con detección de cambios
-  - `AccountViewService.java` - Lógica de lectura multi-entidad
-  - `AccountUpdateService.java` - Actualizaciones transaccionales atómicas
-  - `AccountValidationService.java` - Validaciones de negocio centralizadas
+- **Component Architecture**: Feature-based organization with shared UI components
+- **State Management**: Redux Toolkit with slice pattern for modular state
+- **Service Layer**: API abstraction with axios-based client
+- **Custom Hooks**: Business logic encapsulation (useApi, useSecureSession, domain-specific hooks)
+- **Protected Routes**: Role-based access control (admin, back-office)
+- **Authentication**: Token-based with localStorage persistence
+- **Error Handling**: ErrorBoundary with graceful degradation
+- **Code Splitting**: React.lazy for route-based code splitting
 
-- **APIs públicas:**
-  - `GET /api/account-view?accountId={id}` - Buscar y obtener cuenta completa con datos de cliente
-  - `GET /api/account-view/initialize` - Inicializar pantalla con metadata del sistema
-  - `GET /api/accounts/{accountId}` - Obtener datos de cuenta para edición
-  - `PUT /api/accounts/{accountId}` - Actualizar cuenta y cliente (transaccional)
+### Deployment Architecture
 
-- **Entidades de datos:**
-  - `Account` - Datos financieros y operativos de la cuenta
-  - `Customer` - Información personal y de contacto del cliente
-  - `CardXrefRecord` - Relación entre cuenta, cliente y tarjeta
+\`\`\`
+Frontend (React + Vite)
+ Development: Vite dev server (port 3000) with HMR
+ Production: Static build served by Nginx
+ API Proxy: /api → Backend (http://18.217.121.166:8082)
+\`\`\`
 
-- **Ejemplos US:**
-  - Como **representante de servicio al cliente**, quiero **buscar una cuenta por su ID de 11 dígitos** para **visualizar rápidamente el estado financiero completo del cliente**
-  - Como **administrador de cuentas**, quiero **actualizar el límite de crédito de una cuenta** para **ajustar la capacidad de gasto del cliente según su perfil de riesgo**
-  - Como **oficial de cumplimiento**, quiero **ver datos enmascarados de SSN y número de tarjeta** para **proteger información sensible durante consultas de rutina**
 
-## 🔄 Diagrama de Arquitectura
+## 📚 Module Catalog
+
+### AUTH - Authentication & Authorization
+
+- **ID**: auth
+- **Purpose**: User authentication, session management, and role-based access control
+- **Key Components**:
+  - `LoginPage`: Login form with credential validation
+  - `ProtectedRoute`: Route guard with role verification
+  - `authSlice`: Redux state for authentication
+  - `useSecureSession`: Hook for secure session management with auto-logout
+- **Public APIs**:
+  - `POST /auth/login` - User authentication with credentials
+  - Returns: `{ accessToken, refreshToken, userId, fullName, userType, expiresIn }`
+- **US Examples**:
+  - As a back-office user, I want to log in securely to access the system
+  - As a system administrator, I want sessions to expire after inactivity for security
+  - As a user, I want my session to persist across page refreshes
+
+### ACCOUNT - Account Management
+
+- **ID**: account
+- **Purpose**: View and update customer account information
+- **Key Components**:
+  - `AccountViewScreen`: Display account details with customer and card info
+  - `AccountUpdateScreen`: Update account information with validation
+  - `useAccountView`: Hook for fetching account details
+  - `useAccountUpdate`: Hook for updating account information
+- **Public APIs**:
+  - `GET /accounts/view?accountId={id}` - Retrieve account details with customer and card info
+  - `POST /accounts/update` - Update account information
+- **US Examples**:
+  - As a back-office user, I want to view complete account details to assist customers
+  - As a back-office user, I want to update account information when customer details change
+  - As a user, I want to see all credit cards associated with an account
+
+### CREDITCARD - Credit Card Management
+
+- **ID**: creditCard
+- **Purpose**: List, view, and update credit card information
+- **Key Components**:
+  - `CreditCardListScreen`: Paginated card list with search
+  - `CreditCardDetailScreen`: Detailed card view with account info
+  - `CreditCardUpdateScreen`: Update card details with validation
+  - `useCreditCardList`: Hook for fetching card list with pagination
+  - `useCreditCardDetail`: Hook for card details
+  - `useCreditCardUpdate`: Hook for updating card info
+- **Public APIs**:
+  - `GET /cards/list?page={page}&limit={limit}` - List cards with pagination
+  - `GET /cards/detail?cardNumber={number}` - Get card details
+  - `POST /cards/update` - Update card information
+- **US Examples**:
+  - As a back-office user, I want to search and filter credit cards to find specific accounts
+  - As a back-office user, I want to view card details to verify customer information
+  - As a back-office user, I want to update card status when cards are lost or stolen
+
+### TRANSACTION - Transaction Management
+
+- **ID**: transaction
+- **Purpose**: View, add, and generate reports for financial transactions
+- **Key Components**:
+  - `TransactionListScreen`: Paginated transaction list
+  - `TransactionViewScreen`: Detailed transaction view
+  - `TransactionAddScreen`: Add new transaction with validation
+  - `TransactionReportsScreen`: Generate transaction reports by date range
+  - `TransactionReportTable`: Display report data in table format
+  - `useTransactionList`: Hook for transaction listing
+  - `useTransactionView`: Hook for transaction details
+  - `useTransactionAdd`: Hook for adding transactions
+  - `useTransactionReports`: Hook for generating reports
+- **Public APIs**:
+  - `GET /transactions/list?page={page}&limit={limit}` - List transactions
+  - `GET /transactions/view?transactionId={id}` - Get transaction details
+  - `POST /transactions/add` - Add new transaction
+  - `GET /reports/transactions?startDate={date}&endDate={date}` - Generate reports
+- **US Examples**:
+  - As a back-office user, I want to view transaction history to track account activity
+  - As a back-office user, I want to add manual transactions for adjustments
+  - As a back-office user, I want to generate reports by date range for analysis
+  - As a back-office user, I want to view detailed transaction information for dispute resolution
+
+### BILLPAYMENT - Bill Payment Processing
+
+- **ID**: billPayment
+- **Purpose**: Process bill payments from credit card accounts
+- **Key Components**:
+  - `BillPaymentScreen`: Payment form with account and amount validation
+  - `useBillPayment`: Hook for processing payments
+- **Public APIs**:
+  - `POST /payments/bills` - Process bill payment
+  - Request: `{ accountId, amount, paymentDate, description }`
+  - Response: `{ success, transactionId, confirmationNumber }`
+- **US Examples**:
+  - As a back-office user, I want to process bill payments for customer accounts
+  - As a back-office user, I want to validate account status before processing payments
+  - As a back-office user, I want to receive confirmation numbers for processed payments
+
+### USER - User Management (Admin)
+
+- **ID**: user
+- **Purpose**: Manage system users (admin-only functionality)
+- **Key Components**:
+  - `UserListScreen`: List all system users
+  - `UserAddScreen`: Create new users with role assignment
+  - `UserUpdateScreen`: Update user information
+  - `UserDeleteScreen`: Delete users from system
+  - `useUserList`: Hook for fetching user list
+  - `useUserAdd`: Hook for adding users
+  - `useUserUpdate`: Hook for updating users
+  - `useUserDelete`: Hook for deleting users
+- **Public APIs**:
+  - `GET /admin/users/list` - List all users
+  - `POST /admin/users/add` - Create new user
+  - `PUT /admin/users/update` - Update user info
+  - `DELETE /admin/users/delete?userId={id}` - Delete user
+- **US Examples**:
+  - As an administrator, I want to create new back-office users to expand the team
+  - As an administrator, I want to update user roles to manage permissions
+  - As an administrator, I want to deactivate users who leave the organization
+  - As an administrator, I want to view all system users to manage access
+
+### MENU - Navigation & Menus
+
+- **ID**: menu
+- **Purpose**: Main navigation and menu system with role-based options
+- **Key Components**:
+  - `MenuScreen`: Reusable menu component with role filtering
+  - `MainMenuPage`: Back-office user menu
+  - `AdminMenuPage`: Administrator menu
+  - `useMenu`: Hook for fetching menu options
+- **Public APIs**:
+  - `GET /menu?role={role}` - Get menu options for role
+- **US Examples**:
+  - As a back-office user, I want to see menu options relevant to my role
+  - As an administrator, I want to access additional admin-only menu options
+  - As a user, I want to navigate easily between system functions
+
+### LAYOUT - Layout & UI Components
+
+- **ID**: layout
+- **Purpose**: Shared layout components and system-wide UI elements
+- **Key Components**:
+  - `SystemHeader`: App header with user info and logout
+  - `ErrorBoundary`: Error boundary for graceful error handling
+  - `LoadingSpinner`: Consistent loading indicator
+  - `ThemeToggle`: Theme switching capability
+- **US Examples**:
+  - As a user, I want a consistent header across all pages
+  - As a user, I want to see who is logged in at all times
+  - As a user, I want a clear way to log out of the system
+
+### CORE - Core Infrastructure
+
+- **ID**: core
+- **Purpose**: Core services, utilities, and infrastructure
+- **Key Components**:
+  - `apiClient`: Centralized API client with interceptors
+  - `store`: Redux store configuration
+  - `AppProviders`: Root providers (Redux, Router, Theme)
+  - `useApi`: Generic API hook with loading/error states
+  - `useLocalStorage`: Type-safe localStorage hook
+  - **MSW Mocks**: Complete mock handlers for development
+- **US Examples**:
+  - As a developer, I want centralized API error handling for consistency
+  - As a developer, I want to develop features without backend dependencies
+  - As a developer, I want type-safe state management across the application
+
+## 🔄 Architecture Diagram
 
 ```mermaid
-graph TD
-    A[React Frontend] --> B[Vite Dev Server]
-    B --> C[REST API Gateway]
-    C --> D[Spring Boot Backend]
-    D --> E[Spring Security + JWT]
-    D --> F[Service Layer]
-    F --> G[JPA Repositories]
-    G --> H[PostgreSQL Database]
+graph TB
+    subgraph "Frontend Application"
+        APP[App.tsx<br/>Router + Providers]
+        AUTH[Auth Module<br/>Login & Session]
+        MENU[Menu Module<br/>Navigation]
+        
+        subgraph "Business Modules"
+            ACCOUNT[Account Module]
+            CARD[Credit Card Module]
+            TXN[Transaction Module]
+            BILL[Bill Payment Module]
+            USER[User Management Module]
+        end
+        
+        subgraph "Infrastructure"
+            LAYOUT[Layout Components]
+            STORE[Redux Store]
+            API[API Client]
+            MOCKS[MSW Mocks]
+        end
+    end
     
-    I[MSW Mock Server] -.->|Dev Mode| A
+    subgraph "External Services"
+        BACKEND[Backend API<br/>18.217.121.166:8082]
+    end
     
-    J[Account View] --> K[useAccountView Hook]
-    K --> L[API Service]
+    APP --> AUTH
+    APP --> MENU
+    APP --> LAYOUT
+    AUTH --> STORE
+    MENU --> ACCOUNT
+    MENU --> CARD
+    MENU --> TXN
+    MENU --> BILL
+    MENU --> USER
     
-    M[Account Update] --> N[useAccountUpdate Hook]
-    N --> L
+    ACCOUNT --> API
+    CARD --> API
+    TXN --> API
+    BILL --> API
+    USER --> API
     
-    L --> C
+    API --> MOCKS
+    API --> BACKEND
     
-    style E fill:#f9f,stroke:#333,stroke-width:2px
-    style H fill:#9cf,stroke:#333,stroke-width:2px
+    MOCKS -.Development Mode.-> API
+    BACKEND -.Production Mode.-> API
+    
+    style APP fill:#667eea
+    style AUTH fill:#f6ad55
+    style MOCKS fill:#68d391
+    style BACKEND fill:#fc8181
 ```
 
-## 📊 Modelos de Datos
+## 📊 Data Models
 
-### Account (Entidad JPA)
-```java
-@Entity
-@Table(name = "ACCOUNT")
-public class Account {
-    @Id
-    @Column(name = "ACCT_ID", precision = 11, scale = 0)
-    private Long accountId;                    // 11 dígitos, PK
-    
-    @Column(name = "ACCT_ACTIVE_STATUS", length = 1)
-    private String activeStatus;               // Y/N (activo/inactivo)
-    
-    @Column(name = "ACCT_CURR_BAL", precision = 12, scale = 2)
-    private BigDecimal currentBalance;         // Balance actual
-    
-    @Column(name = "ACCT_CREDIT_LIMIT", precision = 12, scale = 2)
-    private BigDecimal creditLimit;            // Límite de crédito
-    
-    @Column(name = "ACCT_CASH_CREDIT_LIMIT", precision = 12, scale = 2)
-    private BigDecimal cashCreditLimit;        // Límite de efectivo
-    
-    @Column(name = "ACCT_CURR_CYC_CREDIT", precision = 12, scale = 2)
-    private BigDecimal currentCycleCredit;     // Créditos del ciclo actual
-    
-    @Column(name = "ACCT_CURR_CYC_DEBIT", precision = 12, scale = 2)
-    private BigDecimal currentCycleDebit;      // Débitos del ciclo actual
-    
-    @Column(name = "ACCT_OPEN_DATE")
-    private LocalDate openDate;                // Fecha de apertura
-    
-    @Column(name = "ACCT_EXPIRATION_DATE")
-    private LocalDate expirationDate;          // Fecha de expiración
-    
-    @Column(name = "ACCT_REISSUE_DATE")
-    private LocalDate reissueDate;             // Fecha de reemisión
-    
-    @Column(name = "ACCT_ADDR_ZIP", length = 10)
-    private String addressZipCode;             // Código postal
-    
-    @Column(name = "ACCT_GROUP_ID", length = 10)
-    private String groupId;                    // ID de grupo
-}
-```
+### User
 
-### Customer (Entidad JPA)
-```java
-@Entity
-@Table(name = "CUSTOMER")
-public class Customer {
-    @Id
-    @Column(name = "CUST_ID", length = 9)
-    private Long customerId;                   // 9 dígitos, PK
-    
-    @Column(name = "CUST_FIRST_NAME", length = 25)
-    private String firstName;
-    
-    @Column(name = "CUST_MIDDLE_NAME", length = 25)
-    private String middleName;
-    
-    @Column(name = "CUST_LAST_NAME", length = 25)
-    private String lastName;
-    
-    @Column(name = "CUST_ADDR_LINE_1", length = 50)
-    private String addressLine1;
-    
-    @Column(name = "CUST_ADDR_LINE_2", length = 50)
-    private String addressLine2;
-    
-    @Column(name = "CUST_ADDR_LINE_3", length = 50)
-    private String addressLine3;
-    
-    @Column(name = "CUST_ADDR_STATE_CD", length = 2)
-    private String stateCode;                  // Código de 2 letras
-    
-    @Column(name = "CUST_ADDR_COUNTRY_CD", length = 3)
-    private String countryCode;                // Código de 3 letras
-    
-    @Column(name = "CUST_ADDR_ZIP", length = 10)
-    private String zipCode;                    // Código postal
-    
-    @Column(name = "CUST_PHONE_NUM_1", length = 15)
-    private String phoneNumber1;
-    
-    @Column(name = "CUST_PHONE_NUM_2", length = 15)
-    private String phoneNumber2;
-    
-    @Column(name = "CUST_SSN", length = 9)
-    private String socialSecurityNumber;       // SSN de 9 dígitos
-    
-    @Column(name = "CUST_GOVT_ISSUED_ID", length = 20)
-    private String governmentIssuedId;
-    
-    @Column(name = "CUST_DOB")
-    private LocalDate dateOfBirth;
-    
-    @Column(name = "CUST_EFT_ACCOUNT_ID", length = 10)
-    private String eftAccountId;
-    
-    @Column(name = "CUST_PRI_CARD_HOLDER_IND", length = 1)
-    private String primaryCardHolderIndicator; // Y/N
-    
-    @Column(name = "CUST_FICO_CREDIT_SCORE")
-    private Integer ficoScore;                 // 300-850
-}
-```
-
-### AccountViewResponse (DTO TypeScript)
 ```typescript
-export interface AccountViewResponse {
-  // Campos de control
-  currentDate: string;               // Fecha del sistema
-  currentTime: string;               // Hora del sistema
-  transactionId: string;             // ID de transacción (ej: "CAVW")
-  programName: string;               // Nombre del programa (ej: "COACTVWC")
-  
-  // Entrada
-  accountId?: number;
-  
-  // Datos de cuenta
-  accountStatus?: string;            // Y/N
-  currentBalance?: number;
-  creditLimit?: number;
-  cashCreditLimit?: number;
-  currentCycleCredit?: number;
-  currentCycleDebit?: number;
-  openDate?: string;
-  expirationDate?: string;
-  reissueDate?: string;
-  groupId?: string;
-  
-  // Datos de cliente
-  customerId?: number;
-  customerSsn?: string;              // Formato: "XXX-XX-XXXX" (enmascarado)
-  ficoScore?: number;
-  dateOfBirth?: string;
-  firstName?: string;
-  middleName?: string;
-  lastName?: string;
-  addressLine1?: string;
-  addressLine2?: string;
-  addressLine3?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  country?: string;
-  phoneNumber1?: string;
-  phoneNumber2?: string;
-  governmentId?: string;
-  eftAccountId?: string;
-  primaryCardHolderFlag?: string;
-  cardNumber?: string;               // Últimos 4 dígitos visibles
-  
-  // Control y mensajes
-  errorMessage?: string;
-  infoMessage?: string;
-  inputValid: boolean;
+interface User {
+  userId: string;
+  fullName: string;
+  userType: string; // 'A' (Admin) | 'U' (User)
+  role: 'admin' | 'back-office';
+  status: string;
+  createdDate: string;
+  lastLoginDate: string;
 }
 ```
 
-## 📋 Reglas de Negocio por Módulo
+### Account
 
-### CUENTAS - Reglas
-
-#### Identificación y Búsqueda
-- **RN-001**: El Account ID debe ser exactamente de 11 dígitos numéricos
-- **RN-002**: El Account ID no puede ser todo ceros (00000000000)
-- **RN-003**: La búsqueda debe validar la existencia en tres archivos maestros:
-  - Card Cross Reference (CardXrefRecord)
-  - Account Master (Account)
-  - Customer Master (Customer)
-- **RN-004**: Si no existe en Cross Reference, mostrar: "Account not found in Cross ref file"
-- **RN-005**: Si no existe Customer, mostrar: "CustId: {id} not found in customer master"
-
-#### Seguridad y Privacidad
-- **RN-006**: El SSN debe mostrarse enmascarado en formato `***-**-XXXX` (solo últimos 4 dígitos visibles)
-- **RN-007**: El número de tarjeta debe mostrarse enmascarado `****-****-****-XXXX`
-- **RN-008**: Los datos sensibles pueden ser revelados por acción explícita del usuario (botón de vista)
-
-#### Validaciones de Actualización
-- **RN-009**: Active Status solo acepta valores 'Y' (activo) o 'N' (inactivo)
-- **RN-010**: Credit Limit es campo obligatorio y debe ser numérico positivo
-- **RN-011**: Cash Credit Limit no puede exceder el Credit Limit
-- **RN-012**: FICO Score debe estar en el rango 300-850 (si está presente)
-- **RN-013**: First Name y Last Name son obligatorios y deben contener solo caracteres alfabéticos
-- **RN-014**: State Code debe ser exactamente 2 caracteres alfabéticos
-- **RN-015**: ZIP Code debe seguir formato estadounidense: 5 dígitos o 5+4 (`^\d{5}(-\d{4})?$`)
-- **RN-016**: Las fechas deben seguir formato ISO (YYYY-MM-DD)
-- **RN-017**: Phone numbers permiten formato internacional (15 caracteres máximo)
-
-#### Transaccionalidad
-- **RN-018**: La actualización de Account y Customer debe ser atómica (todo o nada)
-- **RN-019**: Si falla la actualización de Account, no se actualiza Customer
-- **RN-020**: Si falla la actualización de Customer, se hace rollback de Account
-- **RN-021**: Antes de actualizar, se debe hacer "READ FOR UPDATE" (lock pesimista)
-
-#### Integridad de Datos
-- **RN-022**: No se permite cambiar el Account ID una vez creado (campo inmutable)
-- **RN-023**: No se permite cambiar el Customer ID una vez creado (campo inmutable)
-- **RN-024**: El Group ID debe mantener consistencia entre Account y relaciones
-
-## 🌐 Internacionalización
-
-### Estado Actual
-**⚠️ NO IMPLEMENTADO** - El módulo de cuentas actualmente NO tiene internacionalización.
-
-### Pendiente de Implementación
-Cuando se implemente i18n, se recomienda la siguiente estructura:
-
-#### Estructura de Archivos i18n Propuesta
-```
-src/frontend/src/i18n/
-├── index.js
-├── locales/
-│   ├── es.json        # Español (prioritario según ticket)
-│   ├── en.json        # Inglés (actual)
-│   └── pt-BR.json     # Portugués Brasil (futuro)
-```
-
-#### Estructura de Claves Propuesta
-```json
-{
-  "common": {
-    "save": "Guardar",
-    "cancel": "Cancelar",
-    "search": "Buscar",
-    "edit": "Editar",
-    "reset": "Restablecer",
-    "confirm": "Confirmar"
-  },
-  "accounts": {
-    "view": {
-      "title": "Visualización de Cuenta",
-      "searchPlaceholder": "Ingrese Account ID (11 dígitos)",
-      "accountInfo": "Información de Cuenta",
-      "financialInfo": "Información Financiera",
-      "customerOverview": "Resumen del Cliente",
-      "contactInfo": "Información de Contacto"
-    },
-    "update": {
-      "title": "Actualización de Cuenta",
-      "editMode": "Modo de Edición",
-      "unsavedChanges": "Cambios sin Guardar",
-      "confirmSave": "¿Está seguro que desea guardar los cambios?"
-    },
-    "fields": {
-      "accountId": "ID de Cuenta",
-      "status": "Estado",
-      "creditLimit": "Límite de Crédito",
-      "balance": "Balance",
-      "openDate": "Fecha de Apertura",
-      "ficoScore": "Puntaje FICO"
-    },
-    "messages": {
-      "notFound": "Cuenta no encontrada en archivo de referencia cruzada",
-      "customerNotFound": "Cliente ID: {id} no encontrado en maestro de clientes",
-      "updateSuccess": "Cuenta actualizada exitosamente",
-      "validationError": "Error de validación: {error}"
-    }
-  },
-  "validation": {
-    "required": "Campo requerido",
-    "invalidFormat": "Formato inválido",
-    "ficoRange": "FICO debe estar entre 300 y 850",
-    "zipFormat": "ZIP debe tener formato 12345 o 12345-6789"
-  }
+```typescript
+interface Account {
+  accountId: string;
+  customerId: string;
+  currentBalance: number;
+  creditLimit: number;
+  accountStatus: string; // 'Y' (Active) | 'N' (Inactive)
+  
+  // Customer information
+  customer: {
+    customerId: string;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    dateOfBirth: string;
+    ssnTaxId: string;
+    ficoScore: number;
+    phoneNumbers: Array<{ phoneType: string; phoneNumber: string }>;
+    address: {
+      addressLine1: string;
+      addressLine2: string;
+      city: string;
+      state: string;
+      zipCode: string;
+      country: string;
+    };
+  };
+  
+  // Cards associated with account
+  cards: CreditCard[];
 }
 ```
 
-## 📋 Patrones de Formularios y Listas
+### CreditCard
 
-### Patrones Identificados
+```typescript
+interface CreditCard {
+  cardNumber: string;
+  accountId: string;
+  embossedName: string;
+  expiryDate: string;
+  cvvCode: string;
+  cardStatus: string; // 'ACTIVE' | 'INACTIVE' | 'EXPIRED'
+  cardType: string;
+  issueDate: string;
+}
+```
 
-#### Formularios
-- **Tipo:** Página completa (no modal) con modo edición toggle
-- **Librería UI:** Material-UI (MUI) 5.15.15
-- **Validación:** Inline validation + validación en servidor
-- **Estado:** Redux Toolkit para gestión global, useState local para formulario
-- **Patrón de cambios:** Comparación JSON.stringify() del estado original vs actual
+### Transaction
 
-#### Listas
-- **Componente de tabla:** No aplica al módulo de cuentas (vista/edición individual)
-- **Búsqueda:** Campo de entrada único con validación regex en tiempo real
-- **Feedback:** Material-UI Snackbar para notificaciones
+```typescript
+interface Transaction {
+  transactionId: string;
+  cardNumber: string;
+  transactionType: string;
+  transactionCategory: string;
+  transactionAmount: number;
+  transactionDescription: string;
+  transactionDate: string;
+  merchantName: string;
+  merchantCity: string;
+  authorizationCode: string;
+  status: string;
+}
+```
 
-#### Notificaciones
-- **Sistema:** Material-UI Alert + Snackbar
-- **Tipos:** success, error, warning, info
-- **Posición:** top-right (configurable)
-- **Duración:** 6000ms auto-hide
+### BillPayment
 
-### Ejemplo de Componente de Vista (Real del Proyecto)
+```typescript
+interface BillPayment {
+  accountId: string;
+  amount: number;
+  paymentDate: string;
+  description: string;
+}
+```
+
+## 📋 Business Rules by Module
+
+### AUTH - Authentication Rules
+
+- Users must provide valid userId and password
+- Sessions expire after 30 minutes of inactivity
+- Token stored in localStorage for persistence
+- Failed login attempts do not lock accounts (handled by backend)
+- Role-based access: `admin` users can access admin routes, `back-office` users restricted to standard routes
+
+### ACCOUNT - Account Management Rules
+
+- Account ID must be 11 digits
+- Only active accounts can be modified
+- Customer information updates require validation
+- Balance and credit limit are read-only (updated via transactions)
+- Account status changes require admin approval
+
+### CREDITCARD - Credit Card Rules
+
+- Card numbers follow standard credit card format (13-19 digits)
+- CVV codes are masked for security (display only last 3 digits)
+- Expired cards cannot be used for transactions
+- Card status must be 'ACTIVE' for new transactions
+- Each account can have multiple cards
+- Card number format displayed with hyphens for readability
+
+### TRANSACTION - Transaction Rules
+
+- Transaction amounts must be positive (credits) or negative (debits)
+- Transaction date cannot be in the future
+- Each transaction must be linked to a valid card
+- Transaction categories follow ISO 18245 MCC codes
+- Reports can be generated for date ranges up to 1 year
+- Transaction IDs are system-generated and immutable
+
+### BILLPAYMENT - Bill Payment Rules
+
+- Payment amount must be positive and greater than zero
+- Account must be active to process payments
+- Payment date can be current date or future date
+- Payments generate a transaction record
+- Confirmation number generated for each successful payment
+
+### USER - User Management Rules
+
+- User IDs must be unique across the system
+- Admin users can create/update/delete other users
+- Cannot delete currently logged-in user
+- User type 'A' maps to admin role, 'U' maps to back-office role
+- Password requirements enforced by backend
+- User status affects login ability (Inactive users cannot login)
+
+## 🌐 Frontend Patterns
+
+### Component Architecture
+
+**Pattern**: Direct Implementation (no base components)
+
+Project uses feature-specific components with Material-UI as the base library.
+
+```
+app/
+ components/
+   ├── account/           # Account-specific components
+   │   ├── AccountViewScreen.tsx
+   │   └── AccountUpdateScreen.tsx
+   ├── creditCard/        # Credit card components
+   │   ├── CreditCardListScreen.tsx
+   │   ├── CreditCardDetailScreen.tsx
+   │   └── CreditCardUpdateScreen.tsx
+   ├── transaction/       # Transaction components
+   │   ├── TransactionListScreen.tsx
+   │   ├── TransactionViewScreen.tsx
+   │   ├── TransactionAddScreen.tsx
+   │   ├── TransactionReportsScreen.tsx
+   │   └── TransactionReportTable.tsx
+   ├── user/              # User management components
+   │   ├── UserListScreen.tsx
+   │   ├── UserAddScreen.tsx
+   │   ├── UserUpdateScreen.tsx
+   │   └── UserDeleteScreen.tsx
+   ├── billPayment/
+   │   └── BillPaymentScreen.tsx
+ menu/   ├
+   │   └── MenuScreen.tsx
+   ├── layout/
+   │   └── SystemHeader.tsx
+   ├── auth/
+   │   └── ProtectedRoute.tsx
+   └── ui/                # Shared UI utilities
+       ├── ErrorBoundary.tsx
+       ├── LoadingSpinner.tsx
+       └── ThemeToggle.tsx
+ pages/                 # Page-level components
+   └── [Feature]Page.tsx
+ hooks/                 # Custom hooks per feature
+    └── use[Feature].ts
+```
+
+### Form Pattern
+
+Forms are implemented directly in feature components using Material-UI components:
+
+- **UI Library**: Material-UI (@mui/material 5.15.15)
+- **Form Implementation**: Direct in component, no form library
+- **Validation**: Custom validation logic in hooks
+- **Error Handling**: State-based error display with Material-UI helpers
+- **Submission**: Async handling via custom hooks (useApi pattern)
+
+**Example Structure**:
 
 ```tsx
-// AccountViewScreen.tsx (simplificado)
-import { useState, useEffect } from "react";
-import { 
-  Box, TextField, Button, Card, CardContent, 
-  Typography, IconButton, Switch 
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useAccountView } from "../hooks/useAccountView";
+import { Box, TextField, Button, Typography } from '@mui/material';
+import { useState } from 'react';
+import { useApi } from '~/hooks/useApi';
 
-export default function AccountViewScreen() {
-  const [accountId, setAccountId] = useState("");
-  const [showSensitive, setShowSensitive] = useState(false);
-  const { data, loading, error, searchAccount, initializeScreen } = useAccountView();
-
-  useEffect(() => {
-    initializeScreen();
-  }, []);
-
-  const handleSearch = () => {
-    if (/^\d{11}$/.test(accountId) && accountId !== "00000000000") {
-      searchAccount({ accountId: accountId.padStart(11, "0") });
-    }
+function FeatureForm() {
+  const [formData, setFormData] = useState({ field: '' });
+  const { execute, loading, error } = useApi();
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await execute(() => apiClient.post('/endpoint', formData));
   };
-
-  const maskSSN = (ssn?: string) => {
-    if (!ssn || !showSensitive) return "***-**-XXXX";
-    return ssn.replace(/(\d{3})(\d{2})(\d{4})/, "$1-$2-$3");
-  };
-
-  const maskCard = (card?: string) => {
-    if (!card || !showSensitive) return "****-****-****-XXXX";
-    return card.replace(/(\d{4})(\d{4})(\d{4})(\d{4})/, "$1-$2-$3-$4");
-  };
-
+  
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Búsqueda */}
+    <Box component="form" onSubmit={handleSubmit}>
       <TextField
-        label="Account ID (11 digits)"
-        value={accountId}
-        onChange={(e) => setAccountId(e.target.value.replace(/\D/g, ""))}
-        inputProps={{ maxLength: 11, pattern: "[0-9]*" }}
-        error={accountId.length > 0 && accountId.length !== 11}
-        helperText={accountId.length > 0 && accountId.length !== 11 ? "Must be 11 digits" : ""}
+        label="Field Label"
+        value={formData.field}
+        onChange={(e) => setFormData({ ...formData, field: e.target.value })}
+        error={!!error}
+        helperText={error?.message}
       />
-      <Button onClick={handleSearch} disabled={loading}>
-        Search (ENTER)
-      </Button>
-
-      {/* Control de visibilidad */}
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Typography>Show Sensitive Data</Typography>
-        <IconButton onClick={() => setShowSensitive(!showSensitive)}>
-          {showSensitive ? <Visibility /> : <VisibilityOff />}
-        </IconButton>
-      </Box>
-
-      {/* Tarjetas de información */}
-      {data && (
-        <>
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Account Information</Typography>
-              <Typography>Account ID: {data.accountId}</Typography>
-              <Typography>Status: {data.accountStatus === "Y" ? "Active" : "Inactive"}</Typography>
-              <Typography>Open Date: {data.openDate}</Typography>
-              <Typography>Group ID: {data.groupId}</Typography>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Financial Information</Typography>
-              <Typography>Credit Limit: ${data.creditLimit?.toFixed(2)}</Typography>
-              <Typography>Current Balance: ${data.currentBalance?.toFixed(2)}</Typography>
-              <Typography>Cash Credit Limit: ${data.cashCreditLimit?.toFixed(2)}</Typography>
-              <Typography>Cycle Credit: ${data.currentCycleCredit?.toFixed(2)}</Typography>
-              <Typography>Cycle Debit: ${data.currentCycleDebit?.toFixed(2)}</Typography>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Customer Overview</Typography>
-              <Typography>Customer ID: {data.customerId}</Typography>
-              <Typography>SSN: {maskSSN(data.customerSsn)}</Typography>
-              <Typography>FICO Score: {data.ficoScore}</Typography>
-              <Typography>DOB: {data.dateOfBirth}</Typography>
-              <Typography>Primary Holder: {data.primaryCardHolderFlag === "Y" ? "Yes" : "No"}</Typography>
-              <Typography>Card: {maskCard(data.cardNumber)}</Typography>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Contact & Personal</Typography>
-              <Typography>Name: {data.firstName} {data.middleName} {data.lastName}</Typography>
-              <Typography>Phone 1: {data.phoneNumber1}</Typography>
-              <Typography>Phone 2: {data.phoneNumber2}</Typography>
-              <Typography>Address: {data.addressLine1}</Typography>
-              <Typography>{data.city}, {data.state} {data.zipCode}</Typography>
-              <Typography>{data.country}</Typography>
-            </CardContent>
-          </Card>
-        </>
-      )}
-
-      {/* Mensajes */}
-      {data?.errorMessage && <Typography color="error">{data.errorMessage}</Typography>}
-      {data?.infoMessage && <Typography color="info">{data.infoMessage}</Typography>}
+      <Button type="submit" disabled={loading}>Submit</Button>
     </Box>
   );
 }
 ```
 
-### Ejemplo de Hook Personalizado (Real del Proyecto)
+### List/Table Pattern
 
-```typescript
-// useAccountView.ts
-import { useState } from "react";
-import { api } from "../services/api";
-import type { AccountViewRequest, AccountViewResponse } from "../types/account";
+Lists use Material-UI components with custom pagination:
 
-export function useAccountView() {
-  const [data, setData] = useState<AccountViewResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+- **Table Component**: Material-UI Table, TableContainer, TablePagination
+- **Data Display**: Tabular format with sortable headers
+- **Pagination**: Client-side or server-side pagination
+- **Actions**: Icon buttons for edit/view/delete actions
+- **Search**: TextField with debounced search
 
-  const searchAccount = async (request: AccountViewRequest) => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Validación básica
-      const accountIdNum = parseInt(request.accountId);
-      if (isNaN(accountIdNum) || accountIdNum === 0) {
-        throw new Error("Account Filter must be a non-zero 11 digit number");
-      }
+**Example Structure**:
 
-      // Padding a 11 dígitos
-      const paddedId = request.accountId.padStart(11, "0");
-      
-      // Llamada API
-      const response = await api.get<AccountViewResponse>(
-        `/account-view?accountId=${paddedId}`
-      );
-      
-      setData(response.data);
-      return response.data;
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : "Unknown error";
-      setError(errorMsg);
-      setData({
-        ...data!,
-        errorMessage: errorMsg,
-        inputValid: false
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+```tsx
+import { 
+  Table, TableBody, TableCell, TableContainer, 
+  TableHead, TableRow, Paper, IconButton, TablePagination 
+} from '@mui/material';
+import { Edit, Delete, Visibility } from '@mui/icons-material';
 
-  const initializeScreen = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get<AccountViewResponse>("/account-view/initialize");
-      setData(response.data);
-    } catch (err) {
-      setError("Failed to initialize screen");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { data, loading, error, searchAccount, initializeScreen };
+function FeatureList({ items, onEdit, onDelete, onView }) {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  
+  return (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Column 1</TableCell>
+            <TableCell>Column 2</TableCell>
+            <TableCell align="right">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item) => (
+            <TableRow key={item.id}>
+              <TableCell>{item.field1}</TableCell>
+              <TableCell>{item.field2}</TableCell>
+              <TableCell align="right">
+                <IconButton onClick={() => onView(item)}><Visibility /></IconButton>
+                <IconButton onClick={() => onEdit(item)}><Edit /></IconButton>
+                <IconButton onClick={() => onDelete(item)}><Delete /></IconButton>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <TablePagination
+        component="div"
+        count={items.length}
+        page={page}
+        onPageChange={(e, newPage) => setPage(newPage)}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
+      />
+    </TableContainer>
+  );
 }
 ```
 
-## 🎯 Patrones de Historias de Usuario
+### Notification Pattern
 
-### Templates por Dominio
+- **Implementation**: Material-UI Snackbar (to be implemented)
+- **Current**: Console logging and error states
+- **Recommended**: Add global Snackbar provider for toast notifications
 
-#### VISUALIZACIÓN DE CUENTAS
-**Patrón:** Como [representante de servicio], quiero [consultar datos de cuenta] para [brindar soporte al cliente]
+### State Management Pattern
 
-**Ejemplos:**
-1. Como **representante de servicio al cliente**, quiero **buscar una cuenta por su ID de 11 dígitos** para **visualizar el estado financiero completo y responder consultas del titular**
-   
-2. Como **supervisor de cuentas**, quiero **ver el puntaje FICO del cliente enmascarado** para **evaluar riesgo sin acceder a datos personales sensibles innecesariamente**
+- **Global State**: Redux Toolkit with slice pattern
+- **Component State**: React useState for local UI state
+- **API State**: Custom hooks with useApi pattern
+- **Persistence**: localStorage via useLocalStorage hook
 
-3. Como **auditor de seguridad**, quiero **ver SSN y número de tarjeta enmascarados por defecto** para **cumplir con políticas de protección de datos durante auditorías**
+### Custom Hook Pattern
 
-4. Como **analista de crédito**, quiero **visualizar el balance actual y límites de crédito** para **evaluar la utilización de crédito del cliente**
+All business logic encapsulated in custom hooks:
 
-#### ACTUALIZACIÓN DE CUENTAS
-**Patrón:** Como [administrador], quiero [modificar parámetros de cuenta] para [ajustar condiciones según perfil del cliente]
+```typescript
+// Generic API hook pattern
+export const useApi = <T>() => {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  
+  const execute = async (apiCall: () => Promise<T>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await apiCall();
+      setData(result);
+      return result;
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return { data, loading, error, execute };
+};
+```
 
-**Ejemplos:**
-1. Como **administrador de cuentas**, quiero **actualizar el límite de crédito de una cuenta** para **reflejar la mejora en el puntaje FICO del cliente**
+### Routing Pattern
 
-2. Como **oficial de riesgo**, quiero **cambiar el estado de una cuenta a inactivo** para **bloquear temporalmente operaciones sospechosas**
+- **Library**: React Router DOM v6
+- **Protection**: ProtectedRoute wrapper component
+- **Role-Based**: Routes filtered by user role
+- **Code Splitting**: React.lazy for all pages
+- **Fallback**: LoadingSpinner during lazy load
 
-3. Como **representante de servicio**, quiero **actualizar la dirección y teléfonos del cliente** para **mantener información de contacto actualizada**
+## 🎯 User Story Patterns
 
-4. Como **gestor de cuentas**, quiero **que las actualizaciones de Account y Customer sean transaccionales** para **garantizar integridad de datos si falla alguna operación**
+### Templates by Domain
 
-5. Como **operador de sistemas**, quiero **recibir confirmación antes de guardar cambios** para **evitar modificaciones accidentales en datos críticos**
+#### Authentication Stories
 
-#### VALIDACIÓN Y SEGURIDAD
-**Patrón:** Como [usuario del sistema], quiero [validaciones automáticas] para [prevenir errores y mantener integridad]
+Pattern: As [persona] I want [action] for [value]
 
-**Ejemplos:**
-1. Como **representante de servicio**, quiero **que el sistema valide el formato del ZIP code** para **evitar ingresar direcciones inválidas**
+- Example 1: As a back-office user, I want to log in with my credentials to access the system securely
+- Example 2: As a system user, I want my session to expire after inactivity to protect sensitive data
+- Example 3: As a user, I want to be redirected to my role-appropriate menu after login
 
-2. Como **administrador**, quiero **que el FICO score solo acepte valores 300-850** para **mantener consistencia con estándares de la industria**
+#### Account Management Stories
 
-3. Como **usuario del sistema**, quiero **ver un indicador de cambios no guardados** para **no perder modificaciones al navegar accidentalmente**
+- Example 1: As a back-office user, I want to view complete account details including customer and card information to assist customers effectively
+- Example 2: As a back-office user, I want to update account information when customer details change
+- Example 3: As a back-office user, I want to see account status clearly to determine if I can perform operations
 
-4. Como **oficial de cumplimiento**, quiero **que el SSN siempre se almacene enmascarado** para **cumplir con regulaciones de privacidad (PCI-DSS)**
+#### Credit Card Stories
 
-### Complejidad de Historias
-- **Simple (1-2 pts):** Operaciones CRUD con patrones existentes (ej: buscar cuenta, mostrar datos)
-- **Medio (3-5 pts):** Lógica de negocio + validación compleja (ej: actualización transaccional, validaciones multi-campo)
-- **Complejo (5-8 pts):** Integraciones multi-sistema o migraciones (ej: sincronizar con sistemas legacy COBOL, auditoría de cambios)
+- Example 1: As a back-office user, I want to list all credit cards with pagination to find specific cards quickly
+- Example 2: As a back-office user, I want to view detailed card information to verify customer data
+- Example 3: As a back-office user, I want to update card status when cards are lost or stolen
 
-### Patrones de Criterios de Aceptación
+#### Transaction Stories
 
-#### Autenticación
-- **Dado** que soy un usuario autenticado con rol "Customer Service"
-- **Cuando** accedo al módulo de cuentas
-- **Entonces** debo poder ver y buscar cuentas pero no editar
+- Example 1: As a back-office user, I want to view transaction history to track account activity
+- Example 2: As a back-office user, I want to add manual transactions for account adjustments
+- Example 3: As a back-office user, I want to generate reports by date range for analysis and auditing
 
-#### Validación
-- **Dado** que ingreso un Account ID en el formulario de búsqueda
-- **Cuando** el ID tiene menos de 11 dígitos
-- **Entonces** el sistema muestra error "Must be 11 digits" y deshabilita el botón Search
+#### Bill Payment Stories
 
-#### Rendimiento
-- **Dado** que realizo una búsqueda de cuenta
-- **Cuando** el ID existe en la base de datos
-- **Entonces** los resultados se muestran en menos de 500ms
+- Example 1: As a back-office user, I want to process bill payments from customer accounts
+- Example 2: As a back-office user, I want to validate account status before processing payments
+- Example 3: As a back-office user, I want to receive confirmation numbers for successful payments
 
-#### Error Handling
-- **Dado** que busco una cuenta que no existe
-- **Cuando** el Account ID no se encuentra en Card Cross Reference
-- **Entonces** el sistema muestra el mensaje "Account not found in Cross ref file"
+#### User Management Stories (Admin)
 
-## ⚡ Presupuestos de Rendimiento
-- **Tiempo de carga inicial:** < 2s (inicialización de pantalla)
-- **Respuesta API búsqueda:** < 500ms (P95) para queries de Account View
-- **Respuesta API actualización:** < 1s (P95) para operaciones transaccionales
-- **Cache hit ratio:** No aplicable (queries directas a BD sin cache)
-- **Queries por pantalla:** 3 queries máximo (CardXref + Account + Customer)
+- Example 1: As an administrator, I want to create new back-office users to expand the team
+- Example 2: As an administrator, I want to update user roles to manage permissions appropriately
+- Example 3: As an administrator, I want to deactivate users who leave the organization
 
-## 🚨 Consideraciones de Preparación
+### Story Complexity
 
-### Riesgos Técnicos
-- **RIESGO-001: Performance en búsquedas**
-  - **Descripción:** Búsqueda secuencial en 3 tablas puede degradarse con volumen
-  - **Mitigación:** Implementar índices en accountId, customerId; considerar caché Redis
+- **Simple (1-2 pts)**: CRUD operations with existing patterns, UI updates, simple validations
+  - Examples: View account details, List credit cards, Update user information
+  
+- **Medium (3-5 pts)**: Business logic + validation, form submissions, error handling, API integration
+  - Examples: Add transaction with validation, Update card status with business rules, Process bill payment
+  
+- **Complex (5-8 pts)**: Multi-step workflows, multiple API calls, complex state management, role-based logic
+  - Examples: Complete account update with customer and card info, Generate comprehensive reports with multiple filters, User management with role transitions
 
-- **RIESGO-002: Falta de i18n**
-  - **Descripción:** Mensajes hardcodeados en inglés no cumplen requisito de español
-  - **Mitigación:** Implementar react-i18next antes de nuevas funcionalidades
+### Acceptance Criteria Patterns
 
-- **RIESGO-003: Validaciones COBOL comentadas**
-  - **Descripción:** Validación de SSN está comentada en código migrado
-  - **Mitigación:** Revisar y habilitar validaciones legacy o implementar nuevas
+- **Authentication**: Must validate credentials, handle invalid login, store token securely, redirect based on role
+- **Validation**: Must verify required fields, enforce business rules, display clear error messages, prevent invalid submissions
+- **Performance**: Must load within 2 seconds, handle pagination efficiently, minimize API calls
+- **Error**: Must display user-friendly error messages, handle network failures gracefully, provide retry mechanisms
+- **Security**: Must protect routes by role, expire sessions after inactivity, sanitize user inputs
+- **Accessibility**: Must be keyboard navigable, provide ARIA labels, support screen readers
 
-- **RIESGO-004: Sincronización con sistemas legacy**
-  - **Descripción:** Si existen sistemas COBOL aún operando, puede haber inconsistencia
-  - **Mitigación:** Confirmar estado de decommission de COACTVWC.CBL y COACTUPC.CBL
+## ⚡ Performance Budgets
 
-### Deuda Técnica
-- **DEUDA-001: Sin internacionalización**
-  - **Impacto:** Bloqueante para mercados no anglófonos
-  - **Plan de resolución:** Sprint de i18n (estimado 5 puntos) antes de Q2 2026
+- **Loading Time**: < 2s (First Contentful Paint)
+- **API Response**: < 500ms (P95) for list operations
+- **API Response**: < 200ms (P95) for detail operations
+- **Bundle Size**: Main chunk < 200KB (currently optimized with code splitting)
+- **Time to Interactive**: < 3s on 3G connection
+- **Mock Latency**: 300-800ms (configurable for development)
 
-- **DEUDA-002: Falta de tests unitarios**
-  - **Impacto:** Riesgo de regresiones en refactorings
-  - **Plan de resolución:** Agregar tests con Jest + React Testing Library (3 puntos/sprint)
+## 🚨 Readiness Considerations
 
-- **DEUDA-003: Documentación API incompleta**
-  - **Impacto:** Dificultad para integraciones futuras
-  - **Plan de resolución:** Completar anotaciones Swagger en todos los endpoints (2 puntos)
+### Technical Risks
 
-- **DEUDA-004: Sin auditoría de cambios**
-  - **Impacto:** No hay trazabilidad de quién modificó qué
-  - **Plan de resolución:** Implementar Audit Trail con Spring Data Envers (5 puntos)
+- **RISK-1**: Backend API availability → Mitigation: MSW mocks for development
+- **RISK-2**: Session management across tabs → Mitigation: useSecureSession hook with localStorage sync
+- **RISK-3**: Large data sets performance → Mitigation: Server-side pagination, lazy loading
+- **RISK-4**: Browser compatibility → Mitigation: Modern browser requirement (ES2020+)
 
-## ✅ Lista de Tareas
+### Tech Debt
 
-### Completado
-- [x] TASK-001: Migración de COACTVWC.CBL a Java/Spring Boot - Estado: completado
-- [x] TASK-002: Migración de COACTUPC.CBL a Java/Spring Boot - Estado: completado
-- [x] TASK-003: Creación de entidades JPA Account y Customer - Estado: completado
-- [x] TASK-004: Implementación de AccountViewService - Estado: completado
-- [x] TASK-005: Implementación de AccountUpdateService transaccional - Estado: completado
-- [x] TASK-006: Desarrollo de AccountViewScreen en React - Estado: completado
-- [x] TASK-007: Desarrollo de AccountUpdateScreen con modo edición - Estado: completado
-- [x] TASK-008: Implementación de mascarado de datos sensibles - Estado: completado
-- [x] TASK-009: Validaciones de negocio en AccountValidationService - Estado: completado
-- [x] TASK-010: Configuración de MSW para testing en desarrollo - Estado: completado
+- **DEBT-1**: No i18n implementation → Resolution: Add vue-i18n or react-i18n library
+- **DEBT-2**: Limited error boundary coverage → Resolution: Add error boundaries to major sections
+- **DEBT-3**: No global notification system → Resolution: Implement Material-UI Snackbar provider
+- **DEBT-4**: Limited test coverage → Resolution: Add Jest + React Testing Library
+- **DEBT-5**: Hard-coded API base URL in proxy → Resolution: Environment-based configuration
 
-### Pendiente
-- [ ] TASK-011: Implementar i18n con soporte para español - Estado: pendiente - Prioridad: ALTA
-- [ ] TASK-012: Agregar tests unitarios para servicios backend - Estado: pendiente
-- [ ] TASK-013: Agregar tests de componentes con React Testing Library - Estado: pendiente
-- [ ] TASK-014: Completar documentación Swagger/OpenAPI - Estado: pendiente
-- [ ] TASK-015: Implementar auditoría de cambios (Audit Trail) - Estado: pendiente
-- [ ] TASK-016: Optimizar queries con índices en PostgreSQL - Estado: pendiente
-- [ ] TASK-017: Implementar caché Redis para búsquedas frecuentes - Estado: pendiente
-- [ ] TASK-018: Habilitar validaciones COBOL comentadas o reemplazarlas - Estado: pendiente
+### US Sequencing
 
-### Obsoleto
-- [~] TASK-901: Mantener programas COBOL COACTVWC y COACTUPC - Estado: obsoleto (migrados a Java)
+**Prerequisites**:
+1. Authentication module must be complete before any protected features
+2. Menu system must be implemented before feature navigation
+3. Core infrastructure (API client, hooks) must be stable
 
-## 📈 Métricas de Éxito
-- **Adopción:** 95% de operadores de servicio al cliente usan la nueva interfaz React
-- **Rendimiento:** P95 de respuesta < 500ms en búsquedas (target alcanzado en tests)
-- **Precisión:** 0 errores de validación reportados en producción (target: <5/mes)
-- **Seguridad:** 100% de datos sensibles enmascarados por defecto
-- **Impacto:** 40% reducción en tiempo promedio de consulta vs interfaz COBOL legacy
+**Recommended Order**:
+1. Phase 1: Authentication & Core (Login, Session, Protected Routes)
+2. Phase 2: Navigation (Menu System, Layout)
+3. Phase 3: Read-Only Features (Account View, Card List, Transaction List)
+4. Phase 4: Update Features (Account Update, Card Update)
+5. Phase 5: Create Features (Transaction Add, Bill Payment)
+6. Phase 6: Reporting (Transaction Reports)
+7. Phase 7: Admin Features (User Management)
 
-**Última actualización:** 2026-01-21  
-**Precisión codebase:** 95% (basado en análisis de código fuente real del repositorio)
+## ✅ Task List
+
+### Completed
+
+- [x] DS3A-1: Initial project setup with React + TypeScript + Vite
+- [x] DS3A-2: Authentication module with login and session management
+- [x] DS3A-3: Redux store setup with auth slice
+- [x] DS3A-4: Protected routes with role-based access
+- [x] DS3A-5: Menu system for navigation
+- [x] DS3A-6: MSW mock implementation for all APIs
+- [x] DS3A-7: Account management (view, update)
+- [x] DS3A-8: Credit card management (list, view, update)
+- [x] DS3A-9: Transaction management (list, view, add, reports)
+- [x] DS3A-10: Bill payment functionality
+- [x] DS3A-11: User management (admin only)
+- [x] DS3A-12: Docker deployment setup
+- [x] DS3A-13: Error boundary and loading states
+
+### Pending
+
+- [ ] DS3A-14: Add comprehensive unit tests
+- [ ] DS3A-15: Implement global notification system (Snackbar)
+- [ ] DS3A-16: Add i18n support for multiple languages
+- [ ] DS3A-17: Implement advanced search and filtering
+- [ ] DS3A-18: Add data export functionality (CSV, PDF)
+- [ ] DS3A-19: Enhance accessibility (WCAG 2.1 compliance)
+- [ ] DS3A-20: Add audit logging
+- [ ] DS3A-21: Implement real-time updates (WebSocket)
+
+### Obsolete
+
+- [~] DS3A-OLD1: Server-side rendering - Project uses client-side rendering with Vite
+
+## 📈 Success Metrics
+
+### Adoption
+
+- **Target**: 95% of back-office users use the system daily
+- **Engagement**: Average session time > 20 minutes
+- **Retention**: 100% user retention (internal tool)
+
+### Business Impact
+
+- **METRIC-1**: 40% reduction in customer service response time
+- **METRIC-2**: 60% reduction in manual data entry errors
+- **METRIC-3**: 100% transaction tracking accuracy
+- **METRIC-4**: 50% faster account updates vs legacy system
+
+### Technical Metrics
+
+- **API Success Rate**: > 99.5%
+- **Page Load Time**: < 2 seconds (95th percentile)
+- **Error Rate**: < 0.5% of transactions
+- **System Availability**: 99.9% uptime
+
+---
+
+**Last update**: 2026-01-26  
+**Codebase accuracy**: 95%+  
+**Next review**: After completion of pending tasks DS3A-14 to DS3A-16

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MENU - Navigation & Menus</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .section { background: white; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #2d3748; }
+        .header h1 { color: white; margin: 0; }
+        .header p { opacity: 0.9; margin: 10px 0 0 0; }
+        code { background: #f7fafc; padding: 2px 6px; border-radius: 3px; color: #e53e3e; }
+        pre { background: #2d3748; color: #fff; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; margin-right: 10px; }
+        footer { text-align: center; padding: 40px 20px; color: #718096; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🧭 MENU - Navigation & Menus</h1>
+            <p>User Story Development Guide</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Purpose:</strong> Role-based navigation menus and application routing</p>
+            <p><strong>Business Context:</strong> This module manages application navigation, providing role-appropriate menu options, main menu pages, admin menu pages, and seamless navigation between system functions.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <ul>
+                <li><strong>Role-Based Menu:</strong> As a user, I want to see only menu options relevant to my role to avoid confusion</li>
+                <li><strong>Main Menu:</strong> As a CSR, I want to access customer service functions from the main menu</li>
+                <li><strong>Admin Menu:</strong> As an administrator, I want to access admin-only functions from a dedicated menu</li>
+                <li><strong>Quick Navigation:</strong> As a power user, I want keyboard shortcuts to quickly navigate between functions</li>
+                <li><strong>Breadcrumbs:</strong> As a user, I want to see where I am in the application to maintain context</li>
+            </ul>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>MenuScreen:</strong> Pre-built menu component with role filtering</li>
+                <li><strong>MainMenuPage:</strong> Standard user menu with common functions</li>
+                <li><strong>AdminMenuPage:</strong> Admin menu with system management functions</li>
+                <li><strong>useMenu Hook:</strong> Menu state and navigation logic</li>
+                <li><strong>MenuConfig:</strong> Centralized menu configuration with role mappings</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Display menu options, Navigate to route, Show active menu item</li>
+                <li><strong>Medium (3-5 pts):</strong> Role-based filtering, Nested menus, Breadcrumb navigation</li>
+                <li><strong>Complex (5-8 pts):</strong> Dynamic menu loading, Customizable menus, Recent items tracking</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <ul>
+                <li><strong>MenuScreen:</strong> Base menu component with role-based filtering</li>
+                <li><strong>MainMenuPage:</strong> Main application menu for standard users</li>
+                <li><strong>AdminMenuPage:</strong> Administrative menu for system management</li>
+                <li><strong>useMenu:</strong> Hook providing menu state and navigation functions</li>
+                <li><strong>MenuConfig:</strong> Configuration object defining all menu items and roles</li>
+                <li><strong>Breadcrumbs:</strong> Component showing navigation path</li>
+            </ul>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>React Router:</strong> Route navigation</li>
+                <li><strong>Auth Module:</strong> Role-based access control</li>
+                <li><strong>Redux Store:</strong> Menu state management</li>
+                <li><strong>Layout Module:</strong> Integration with SystemHeader</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>GET /menu
+Request: { userType: string }
+Response: { 
+  menuItems: Array<MenuItem>,
+  userType: string
+}
+
+MenuItem Structure:
+{
+  id: string,
+  label: string,
+  route: string,
+  icon?: string,
+  requiredRole?: string,
+  children?: Array<MenuItem>
+}
+
+Example Menu Items:
+- Accounts (route: /accounts, role: CSR)
+- Credit Cards (route: /cards, role: CSR)
+- Transactions (route: /transactions, role: CSR)
+- Bill Payments (route: /payments, role: CSR)
+- User Management (route: /admin/users, role: ADMIN)
+- Reports (route: /reports, role: MANAGER)</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>💡 Implementation Examples</h2>
+            
+            <h3>Using Menu Hook</h3>
+            <pre><code>import { useMenu } from '~/features/menu/hooks/useMenu';
+
+function NavigationMenu() {
+  const { menuItems, navigate } = useMenu();
+  
+  return (
+    &lt;nav&gt;
+      {menuItems.map(item =&gt; (
+        &lt;button 
+          key={item.id} 
+          onClick={() =&gt; navigate(item.route)}
+        &gt;
+          {item.label}
+        &lt;/button&gt;
+      ))}
+    &lt;/nav&gt;
+  );
+}</code></pre>
+
+            <h3>Main Menu Page</h3>
+            <pre><code>import { MainMenuPage } from '~/features/menu/MainMenuPage';
+
+function Dashboard() {
+  return (
+    &lt;MainMenuPage
+      title="Customer Service Functions"
+      showRecentItems={true}
+    /&gt;
+  );
+}</code></pre>
+
+            <h3>Role-Based Menu Display</h3>
+            <pre><code>import { useAppSelector } from '~/store/hooks';
+import { selectCurrentUser } from '~/features/auth/authSlice';
+import { MainMenuPage } from '~/features/menu/MainMenuPage';
+import { AdminMenuPage } from '~/features/menu/AdminMenuPage';
+
+function AppMenu() {
+  const user = useAppSelector(selectCurrentUser);
+  
+  return user?.userType === 'ADMIN' 
+    ? &lt;AdminMenuPage /&gt; 
+    : &lt;MainMenuPage /&gt;;
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>✅ Acceptance Criteria Examples</h2>
+            <ul>
+                <li>✓ Menu displays only items appropriate for user's role</li>
+                <li>✓ Admin users see additional admin menu options</li>
+                <li>✓ CSR users only see customer service functions</li>
+                <li>✓ Menu items navigate to correct routes when clicked</li>
+                <li>✓ Active menu item is highlighted</li>
+                <li>✓ Menu loads within 1 second of authentication</li>
+                <li>✓ Nested menu items expand/collapse correctly</li>
+                <li>✓ Breadcrumbs show current location in app</li>
+                <li>✓ Menu persists across page refreshes</li>
+                <li>✓ Unauthorized menu items return 403 error if accessed directly</li>
+                <li>✓ Recent items list shows last 5 accessed pages</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Index</a></p>
+            <p><em>Last update: 2026-01-26</em></p>
+        </footer>
+    </div>
+</body>
+</html>

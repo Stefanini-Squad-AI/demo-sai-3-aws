@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTH - Authentication & Authorization</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .section { background: white; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #2d3748; }
+        .header h1 { color: white; margin: 0; }
+        .header p { opacity: 0.9; margin: 10px 0 0 0; }
+        code { background: #f7fafc; padding: 2px 6px; border-radius: 3px; color: #e53e3e; }
+        pre { background: #2d3748; color: #fff; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; margin-right: 10px; }
+        footer { text-align: center; padding: 40px 20px; color: #718096; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔐 AUTH - Authentication & Authorization</h1>
+            <p>User Story Development Guide</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Purpose:</strong> User authentication, session management, and role-based access control</p>
+            <p><strong>Business Context:</strong> This module handles all aspects of user authentication and authorization, ensuring secure access to the SAI Application with role-based permissions.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <ul>
+                <li><strong>Login:</strong> As a back-office user, I want to log in with my credentials to access the system securely</li>
+                <li><strong>Session Management:</strong> As a system user, I want my session to expire after inactivity to protect sensitive data</li>
+                <li><strong>Role-Based Access:</strong> As an administrator, I want to access admin-only features to manage the system</li>
+                <li><strong>Session Persistence:</strong> As a user, I want my session to persist across page refreshes to maintain my work context</li>
+            </ul>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>authSlice (Redux):</strong> Pre-built state management for authentication with login/logout actions</li>
+                <li><strong>ProtectedRoute Component:</strong> Reusable route wrapper for access control</li>
+                <li><strong>useSecureSession Hook:</strong> Automatic session monitoring and timeout handling</li>
+                <li><strong>apiClient:</strong> Centralized API client with token management</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Display login form, Show authentication errors, Logout functionality</li>
+                <li><strong>Medium (3-5 pts):</strong> Implement session timeout, Add role-based redirect, Token refresh logic</li>
+                <li><strong>Complex (5-8 pts):</strong> Multi-factor authentication, SSO integration, Session management across tabs</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <ul>
+                <li><strong>LoginPage:</strong> Main login form with credential validation</li>
+                <li><strong>ProtectedRoute:</strong> HOC for route protection with role checking</li>
+                <li><strong>authSlice:</strong> Redux slice managing authentication state</li>
+                <li><strong>useSecureSession:</strong> Hook monitoring session activity and auto-logout</li>
+            </ul>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>Redux Toolkit:</strong> State management</li>
+                <li><strong>React Router:</strong> Navigation and route protection</li>
+                <li><strong>localStorage:</strong> Token persistence</li>
+                <li><strong>API Client:</strong> Authentication requests</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>POST /auth/login
+Request: { userId: string, password: string }
+Response: { 
+  accessToken: string, 
+  refreshToken: string, 
+  userId: string, 
+  fullName: string, 
+  userType: string,
+  expiresIn: number 
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>💡 Implementation Examples</h2>
+            
+            <h3>Protected Route Usage</h3>
+            <pre><code>&lt;Route 
+  path="/admin/users" 
+  element={
+    &lt;ProtectedRoute requiredRole="admin"&gt;
+      &lt;UserListPage /&gt;
+    &lt;/ProtectedRoute&gt;
+  } 
+/&gt;</code></pre>
+
+            <h3>Authentication State Access</h3>
+            <pre><code>import { useAppSelector } from '~/store/hooks';
+import { selectIsAuthenticated, selectCurrentUser } from '~/features/auth/authSlice';
+
+function MyComponent() {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const user = useAppSelector(selectCurrentUser);
+  
+  return &lt;div&gt;Welcome, {user?.fullName}&lt;/div&gt;;
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>✅ Acceptance Criteria Examples</h2>
+            <ul>
+                <li>✓ User can log in with valid credentials</li>
+                <li>✓ Invalid credentials show clear error message</li>
+                <li>✓ Session expires after 30 minutes of inactivity</li>
+                <li>✓ Token is stored securely in localStorage</li>
+                <li>✓ User is redirected to appropriate menu based on role</li>
+                <li>✓ Logout clears all authentication data</li>
+                <li>✓ Protected routes redirect unauthenticated users to login</li>
+                <li>✓ Session persists across page refreshes</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Index</a></p>
+            <p><em>Last update: 2026-01-26</em></p>
+        </footer>
+    </div>
+</body>
+</html>

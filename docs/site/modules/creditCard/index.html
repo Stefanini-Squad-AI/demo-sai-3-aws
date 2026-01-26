@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREDITCARD - Credit Card Management</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .section { background: white; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #2d3748; }
+        .header h1 { color: white; margin: 0; }
+        .header p { opacity: 0.9; margin: 10px 0 0 0; }
+        code { background: #f7fafc; padding: 2px 6px; border-radius: 3px; color: #e53e3e; }
+        pre { background: #2d3748; color: #fff; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; margin-right: 10px; }
+        footer { text-align: center; padding: 40px 20px; color: #718096; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💳 CREDITCARD - Credit Card Management</h1>
+            <p>User Story Development Guide</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Purpose:</strong> Comprehensive credit card management including listing, viewing details, and status updates</p>
+            <p><strong>Business Context:</strong> This module handles all credit card operations including browsing cards with pagination, viewing detailed card information, and updating card status (activate, suspend, close).</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <ul>
+                <li><strong>List Cards:</strong> As a CSR, I want to list all credit cards with pagination to efficiently browse customer cards</li>
+                <li><strong>View Card Details:</strong> As a back-office user, I want to view detailed card information to assist with inquiries</li>
+                <li><strong>Update Card Status:</strong> As a risk analyst, I want to suspend or activate cards to manage account security</li>
+                <li><strong>Search Cards:</strong> As an account manager, I want to search cards by number or account to quickly find specific cards</li>
+            </ul>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>useCreditCardList Hook:</strong> Pre-built pagination and filtering logic</li>
+                <li><strong>useCreditCardDetail Hook:</strong> Card detail fetching with caching</li>
+                <li><strong>useCreditCardUpdate Hook:</strong> Status update with validation</li>
+                <li><strong>CreditCardListScreen:</strong> Complete paginated list component</li>
+                <li><strong>CreditCardDetailScreen:</strong> Comprehensive detail view with actions</li>
+                <li><strong>CreditCardUpdateScreen:</strong> Status update form with reason codes</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Display card list, View card details, Show card status</li>
+                <li><strong>Medium (3-5 pts):</strong> Implement pagination, Add status filtering, Update card status</li>
+                <li><strong>Complex (5-8 pts):</strong> Bulk status updates, Advanced search filters, Card replacement workflow</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <ul>
+                <li><strong>CreditCardListScreen:</strong> Paginated list with filters and search</li>
+                <li><strong>CreditCardDetailScreen:</strong> Complete card details with transaction history</li>
+                <li><strong>CreditCardUpdateScreen:</strong> Form for status changes with reason codes</li>
+                <li><strong>useCreditCardList:</strong> Hook managing list state, pagination, and filters</li>
+                <li><strong>useCreditCardDetail:</strong> Hook for single card data fetching</li>
+                <li><strong>useCreditCardUpdate:</strong> Hook handling status updates with validation</li>
+            </ul>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>React Hook Form:</strong> Form management</li>
+                <li><strong>API Client:</strong> Card API requests</li>
+                <li><strong>React Router:</strong> Navigation between list/detail/update</li>
+                <li><strong>Transaction Module:</strong> Display recent transactions</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>GET /cards/list
+Request: { page: number, pageSize: number, status?: string }
+Response: { 
+  cards: Array<CardSummary>,
+  totalCount: number,
+  currentPage: number,
+  totalPages: number
+}
+
+GET /cards/detail
+Request: { cardNumber: string }
+Response: { 
+  cardNumber: string,
+  accountId: string,
+  cardholderName: string,
+  cardStatus: string,
+  creditLimit: number,
+  availableCredit: number,
+  expirationDate: string,
+  lastFourDigits: string
+}
+
+POST /cards/update
+Request: { 
+  cardNumber: string,
+  newStatus: string,
+  reasonCode?: string,
+  notes?: string
+}
+Response: { 
+  success: boolean,
+  message: string,
+  updatedCard: Card
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>💡 Implementation Examples</h2>
+            
+            <h3>Card List with Pagination</h3>
+            <pre><code>import { useCreditCardList } from '~/features/creditCard/hooks/useCreditCardList';
+
+function CardListPage() {
+  const { cards, loading, page, totalPages, setPage } = useCreditCardList({
+    pageSize: 20,
+    status: 'ACTIVE'
+  });
+  
+  if (loading) return &lt;LoadingSpinner /&gt;;
+  
+  return (
+    &lt;div&gt;
+      &lt;CardTable cards={cards} /&gt;
+      &lt;Pagination 
+        current={page} 
+        total={totalPages} 
+        onChange={setPage} 
+      /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+            <h3>Update Card Status</h3>
+            <pre><code>import { useCreditCardUpdate } from '~/features/creditCard/hooks/useCreditCardUpdate';
+
+function SuspendCardButton({ cardNumber }) {
+  const { updateCard, loading } = useCreditCardUpdate();
+  
+  const handleSuspend = async () =&gt; {
+    await updateCard({
+      cardNumber,
+      newStatus: 'SUSPENDED',
+      reasonCode: 'FRAUD_SUSPECTED',
+      notes: 'Customer reported suspicious activity'
+    });
+  };
+  
+  return (
+    &lt;button onClick={handleSuspend} disabled={loading}&gt;
+      Suspend Card
+    &lt;/button&gt;
+  );
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>✅ Acceptance Criteria Examples</h2>
+            <ul>
+                <li>✓ Card list displays 20 cards per page by default</li>
+                <li>✓ Pagination controls allow navigation between pages</li>
+                <li>✓ Card details load within 2 seconds</li>
+                <li>✓ Last 4 digits displayed with masking (****1234)</li>
+                <li>✓ Status badge color matches card status (green=active, yellow=suspended, red=closed)</li>
+                <li>✓ Status update requires reason code for suspended/closed status</li>
+                <li>✓ Successful status change shows confirmation message</li>
+                <li>✓ Card detail page shows recent transactions (last 10)</li>
+                <li>✓ Filter by status updates list in real-time</li>
+                <li>✓ Search by card number or account ID works correctly</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Index</a></p>
+            <p><em>Last update: 2026-01-26</em></p>
+        </footer>
+    </div>
+</body>
+</html>

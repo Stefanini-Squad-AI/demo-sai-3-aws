@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE - Core Infrastructure</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .section { background: white; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #2d3748; }
+        .header h1 { color: white; margin: 0; }
+        .header p { opacity: 0.9; margin: 10px 0 0 0; }
+        code { background: #f7fafc; padding: 2px 6px; border-radius: 3px; color: #e53e3e; }
+        pre { background: #2d3748; color: #fff; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; margin-right: 10px; }
+        footer { text-align: center; padding: 40px 20px; color: #718096; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>⚙️ CORE - Core Infrastructure</h1>
+            <p>User Story Development Guide</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Purpose:</strong> Core infrastructure including API client, state management, and development tooling</p>
+            <p><strong>Business Context:</strong> This module provides the foundational infrastructure for the entire application, including centralized API communication, Redux store configuration, React context providers, custom hooks for common operations, and MSW (Mock Service Worker) for development without a backend.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <ul>
+                <li><strong>Centralized Errors:</strong> As a developer, I want centralized error handling to maintain consistent error UX</li>
+                <li><strong>Offline Development:</strong> As a developer, I want to work without a backend using mocks to accelerate development</li>
+                <li><strong>Type Safety:</strong> As a developer, I want type-safe state management to catch errors at compile time</li>
+                <li><strong>API Abstraction:</strong> As a developer, I want a consistent API client to simplify HTTP requests</li>
+                <li><strong>Reusable Hooks:</strong> As a developer, I want common hooks (useApi, useLocalStorage) to avoid repetition</li>
+            </ul>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>apiClient:</strong> Pre-configured Axios instance with interceptors</li>
+                <li><strong>Redux Store:</strong> Complete store setup with TypeScript support</li>
+                <li><strong>AppProviders:</strong> Component wrapping all React context providers</li>
+                <li><strong>useApi Hook:</strong> Generic hook for API calls with loading/error states</li>
+                <li><strong>useLocalStorage Hook:</strong> Hook for persistent local storage with type safety</li>
+                <li><strong>MSW Handlers:</strong> Pre-built mock handlers for all API endpoints</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Use existing hooks, Call API with apiClient, Access store state</li>
+                <li><strong>Medium (3-5 pts):</strong> Create new Redux slice, Add new API endpoint, Create custom hook</li>
+                <li><strong>Complex (5-8 pts):</strong> Implement caching strategy, Add middleware, Optimize performance</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <ul>
+                <li><strong>apiClient:</strong> Axios instance with base URL, auth headers, and interceptors</li>
+                <li><strong>store:</strong> Redux store with configured slices and middleware</li>
+                <li><strong>AppProviders:</strong> Root component with Redux Provider and other contexts</li>
+                <li><strong>useApi:</strong> Generic hook for API calls with automatic error handling</li>
+                <li><strong>useLocalStorage:</strong> Hook for reading/writing localStorage with JSON serialization</li>
+                <li><strong>MSW Handlers:</strong> Mock Service Worker handlers for API simulation</li>
+                <li><strong>hooks.ts:</strong> Typed useAppDispatch and useAppSelector hooks</li>
+            </ul>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>Redux Toolkit:</strong> State management</li>
+                <li><strong>React-Redux:</strong> React bindings for Redux</li>
+                <li><strong>Axios:</strong> HTTP client</li>
+                <li><strong>MSW:</strong> API mocking for development and testing</li>
+                <li><strong>TypeScript:</strong> Type safety</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>// API Client Usage
+import { apiClient } from '~/core/apiClient';
+
+const response = await apiClient.get('/accounts/view', {
+  params: { accountId: 'ACC123' }
+});
+
+// useApi Hook
+const { data, loading, error, execute } = useApi&lt;AccountData&gt;();
+
+useEffect(() =&gt; {
+  execute(() =&gt; apiClient.get('/accounts/view', { params: { accountId } }));
+}, [accountId]);
+
+// useLocalStorage Hook
+const [token, setToken] = useLocalStorage&lt;string&gt;('authToken', null);
+
+// Redux Store Access
+import { useAppSelector, useAppDispatch } from '~/store/hooks';
+import { selectUser } from '~/features/auth/authSlice';
+
+const user = useAppSelector(selectUser);
+const dispatch = useAppDispatch();
+
+// MSW Mock Setup
+import { handlers } from '~/mocks/handlers';
+import { setupWorker } from 'msw/browser';
+
+const worker = setupWorker(...handlers);
+worker.start();</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>💡 Implementation Examples</h2>
+            
+            <h3>Using apiClient</h3>
+            <pre><code>import { apiClient } from '~/core/apiClient';
+
+async function fetchAccount(accountId: string) {
+  try {
+    const response = await apiClient.get('/accounts/view', {
+      params: { accountId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch account:', error);
+    throw error;
+  }
+}</code></pre>
+
+            <h3>Creating a Custom Hook with useApi</h3>
+            <pre><code>import { useApi } from '~/core/hooks/useApi';
+import { apiClient } from '~/core/apiClient';
+
+export function useAccountView(accountId: string) {
+  const { data, loading, error, execute } = useApi&lt;Account&gt;();
+  
+  useEffect(() =&gt; {
+    if (accountId) {
+      execute(() =&gt; apiClient.get('/accounts/view', {
+        params: { accountId }
+      }));
+    }
+  }, [accountId, execute]);
+  
+  return { account: data, loading, error };
+}</code></pre>
+
+            <h3>MSW Mock Handler</h3>
+            <pre><code>import { http, HttpResponse } from 'msw';
+
+export const handlers = [
+  http.get('/api/accounts/view', ({ request }) =&gt; {
+    const url = new URL(request.url);
+    const accountId = url.searchParams.get('accountId');
+    
+    return HttpResponse.json({
+      accountId,
+      accountHolder: 'John Doe',
+      accountStatus: 'ACTIVE',
+      currentBalance: 5000.00
+    });
+  })
+];</code></pre>
+
+            <h3>Redux Slice Example</h3>
+            <pre><code>import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface AccountState {
+  currentAccount: Account | null;
+  loading: boolean;
+}
+
+const accountSlice = createSlice({
+  name: 'account',
+  initialState: { currentAccount: null, loading: false } as AccountState,
+  reducers: {
+    setAccount: (state, action: PayloadAction&lt;Account&gt;) =&gt; {
+      state.currentAccount = action.payload;
+    }
+  }
+});
+
+export const { setAccount } = accountSlice.actions;
+export default accountSlice.reducer;</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>✅ Acceptance Criteria Examples</h2>
+            <ul>
+                <li>✓ apiClient automatically attaches auth token to requests</li>
+                <li>✓ apiClient intercepts 401 errors and redirects to login</li>
+                <li>✓ Redux store persists authentication state in localStorage</li>
+                <li>✓ useApi hook handles loading and error states automatically</li>
+                <li>✓ useLocalStorage hook serializes/deserializes JSON correctly</li>
+                <li>✓ MSW mocks all API endpoints in development mode</li>
+                <li>✓ MSW handlers return realistic mock data</li>
+                <li>✓ Type safety prevents runtime errors in store access</li>
+                <li>✓ Error boundaries catch and display API errors gracefully</li>
+                <li>✓ All async operations show loading indicators</li>
+                <li>✓ Console shows no TypeScript errors</li>
+                <li>✓ App works fully offline in development with MSW</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Index</a></p>
+            <p><em>Last update: 2026-01-26</em></p>
+        </footer>
+    </div>
+</body>
+</html>

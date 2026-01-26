@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRANSACTION - Transaction Management</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .section { background: white; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #2d3748; }
+        .header h1 { color: white; margin: 0; }
+        .header p { opacity: 0.9; margin: 10px 0 0 0; }
+        code { background: #f7fafc; padding: 2px 6px; border-radius: 3px; color: #e53e3e; }
+        pre { background: #2d3748; color: #fff; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; margin-right: 10px; }
+        footer { text-align: center; padding: 40px 20px; color: #718096; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💰 TRANSACTION - Transaction Management</h1>
+            <p>User Story Development Guide</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Purpose:</strong> View transaction history, add manual transactions, and generate transaction reports</p>
+            <p><strong>Business Context:</strong> This module provides comprehensive transaction management including viewing transaction history with pagination, viewing detailed transaction information, adding manual transactions, and generating transaction reports by date range.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <ul>
+                <li><strong>View History:</strong> As a customer, I want to view my transaction history to track my spending</li>
+                <li><strong>Transaction Details:</strong> As a CSR, I want to view detailed transaction information to answer customer questions</li>
+                <li><strong>Manual Transaction:</strong> As a back-office user, I want to add manual transactions to correct account balances</li>
+                <li><strong>Generate Reports:</strong> As an account manager, I want to generate transaction reports by date range for analysis</li>
+                <li><strong>Search Transactions:</strong> As a CSR, I want to search transactions by merchant or amount to find specific transactions</li>
+            </ul>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>TransactionListScreen:</strong> Pre-built paginated list with filters</li>
+                <li><strong>TransactionViewScreen:</strong> Complete detail view component</li>
+                <li><strong>TransactionAddScreen:</strong> Form with validation for manual entries</li>
+                <li><strong>TransactionReportsScreen:</strong> Report generation with date pickers</li>
+                <li><strong>TransactionReportTable:</strong> Formatted table with export functionality</li>
+                <li><strong>useTransactionList Hook:</strong> Pagination and filtering logic</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Display transaction list, View transaction details, Filter by date</li>
+                <li><strong>Medium (3-5 pts):</strong> Add manual transaction, Generate basic reports, Search transactions</li>
+                <li><strong>Complex (5-8 pts):</strong> Advanced reporting with aggregations, Export to multiple formats, Dispute management</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <ul>
+                <li><strong>TransactionListScreen:</strong> Paginated list with date filters and search</li>
+                <li><strong>TransactionViewScreen:</strong> Detailed view of single transaction</li>
+                <li><strong>TransactionAddScreen:</strong> Form for manual transaction entry</li>
+                <li><strong>TransactionReportsScreen:</strong> Report generation interface with date range picker</li>
+                <li><strong>TransactionReportTable:</strong> Formatted table displaying report data with totals</li>
+            </ul>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>React Hook Form:</strong> Form management for manual entries</li>
+                <li><strong>API Client:</strong> Transaction API requests</li>
+                <li><strong>Date-fns:</strong> Date formatting and manipulation</li>
+                <li><strong>React Router:</strong> Navigation between list/detail/add</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>GET /transactions/list
+Request: { 
+  accountId?: string,
+  cardNumber?: string,
+  startDate?: string,
+  endDate?: string,
+  page: number,
+  pageSize: number
+}
+Response: { 
+  transactions: Array<Transaction>,
+  totalCount: number,
+  currentPage: number,
+  totalPages: number
+}
+
+GET /transactions/view
+Request: { transactionId: string }
+Response: { 
+  transactionId: string,
+  cardNumber: string,
+  merchantName: string,
+  amount: number,
+  transactionDate: string,
+  category: string,
+  status: string
+}
+
+POST /transactions/add
+Request: { 
+  cardNumber: string,
+  merchantName: string,
+  amount: number,
+  transactionDate: string,
+  category: string,
+  description?: string
+}
+Response: { 
+  success: boolean,
+  transactionId: string,
+  message: string
+}
+
+GET /reports/transactions
+Request: { 
+  accountId?: string,
+  startDate: string,
+  endDate: string,
+  groupBy?: string
+}
+Response: { 
+  reportData: Array<ReportRow>,
+  summary: {
+    totalTransactions: number,
+    totalAmount: number,
+    averageAmount: number
+  }
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>💡 Implementation Examples</h2>
+            
+            <h3>Transaction List with Filters</h3>
+            <pre><code>import { TransactionListScreen } from '~/features/transaction/TransactionListScreen';
+
+function TransactionHistory() {
+  return (
+    &lt;TransactionListScreen
+      accountId="ACC123456"
+      startDate="2024-01-01"
+      endDate="2024-01-31"
+      pageSize={25}
+    /&gt;
+  );
+}</code></pre>
+
+            <h3>Generate Transaction Report</h3>
+            <pre><code>import { useState } from 'react';
+import { TransactionReportsScreen } from '~/features/transaction/TransactionReportsScreen';
+
+function ReportsPage() {
+  const [dateRange, setDateRange] = useState({
+    startDate: '2024-01-01',
+    endDate: '2024-01-31'
+  });
+  
+  return (
+    &lt;TransactionReportsScreen
+      startDate={dateRange.startDate}
+      endDate={dateRange.endDate}
+      groupBy="category"
+    /&gt;
+  );
+}</code></pre>
+
+            <h3>Add Manual Transaction</h3>
+            <pre><code>import { TransactionAddScreen } from '~/features/transaction/TransactionAddScreen';
+
+function AddTransaction({ cardNumber }) {
+  const handleSuccess = (transactionId) =&gt; {
+    console.log('Transaction added:', transactionId);
+  };
+  
+  return (
+    &lt;TransactionAddScreen
+      cardNumber={cardNumber}
+      onSuccess={handleSuccess}
+    /&gt;
+  );
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>✅ Acceptance Criteria Examples</h2>
+            <ul>
+                <li>✓ Transaction list displays 25 transactions per page</li>
+                <li>✓ Date filter updates list within 2 seconds</li>
+                <li>✓ Transaction details show all fields (merchant, amount, date, status)</li>
+                <li>✓ Manual transaction form validates required fields</li>
+                <li>✓ Amount field accepts decimal values with 2 decimal places</li>
+                <li>✓ Report generation completes within 5 seconds for 1000 transactions</li>
+                <li>✓ Report summary shows correct totals and averages</li>
+                <li>✓ Search finds transactions by merchant name (case-insensitive)</li>
+                <li>✓ Transaction status displays with appropriate color coding</li>
+                <li>✓ Date range picker validates start date is before end date</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Index</a></p>
+            <p><em>Last update: 2026-01-26</em></p>
+        </footer>
+    </div>
+</body>
+</html>

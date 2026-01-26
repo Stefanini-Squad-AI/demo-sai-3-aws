@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAYOUT - Layout & UI Components</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .section { background: white; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #2d3748; }
+        .header h1 { color: white; margin: 0; }
+        .header p { opacity: 0.9; margin: 10px 0 0 0; }
+        code { background: #f7fafc; padding: 2px 6px; border-radius: 3px; color: #e53e3e; }
+        pre { background: #2d3748; color: #fff; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; margin-right: 10px; }
+        footer { text-align: center; padding: 40px 20px; color: #718096; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎨 LAYOUT - Layout & UI Components</h1>
+            <p>User Story Development Guide</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Purpose:</strong> Consistent layout components and UI elements across the application</p>
+            <p><strong>Business Context:</strong> This module provides reusable layout and UI components including system header, error boundaries, loading indicators, and theme controls to ensure consistent user experience throughout the application.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <ul>
+                <li><strong>Consistent Header:</strong> As a user, I want to see a consistent header on all pages to maintain context</li>
+                <li><strong>User Info Display:</strong> As a user, I want to see who I'm logged in as to confirm my identity</li>
+                <li><strong>Logout Access:</strong> As a user, I want easy access to logout from any page for security</li>
+                <li><strong>Error Handling:</strong> As a user, I want errors to be handled gracefully without crashing the app</li>
+                <li><strong>Loading Feedback:</strong> As a user, I want to see loading indicators during data fetches</li>
+                <li><strong>Theme Toggle:</strong> As a user, I want to switch between light/dark mode for comfort</li>
+            </ul>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>SystemHeader:</strong> Pre-built header with logo, user info, and logout</li>
+                <li><strong>ErrorBoundary:</strong> React error boundary for graceful error handling</li>
+                <li><strong>LoadingSpinner:</strong> Reusable loading indicator component</li>
+                <li><strong>ThemeToggle:</strong> Theme switcher with persistence</li>
+                <li><strong>Layout Wrapper:</strong> Standard page layout structure</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Use existing components, Display header, Show loading state</li>
+                <li><strong>Medium (3-5 pts):</strong> Customize layout, Add error boundary, Implement theme toggle</li>
+                <li><strong>Complex (5-8 pts):</strong> Create new layout patterns, Advanced animations, Accessibility enhancements</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <ul>
+                <li><strong>SystemHeader:</strong> Application header with branding, user info, and navigation</li>
+                <li><strong>ErrorBoundary:</strong> Component catching and displaying React errors gracefully</li>
+                <li><strong>LoadingSpinner:</strong> Animated loading indicator with customizable size</li>
+                <li><strong>ThemeToggle:</strong> Button for switching between light and dark themes</li>
+                <li><strong>PageLayout:</strong> Standard page wrapper with header and content area</li>
+                <li><strong>Card:</strong> Reusable card container for content sections</li>
+            </ul>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>React:</strong> Core library for components</li>
+                <li><strong>Redux Store:</strong> Theme and user state</li>
+                <li><strong>Auth Module:</strong> User information display</li>
+                <li><strong>React Router:</strong> Navigation in header</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>SystemHeader Props:
+{
+  title?: string,
+  showUserInfo?: boolean,
+  showLogout?: boolean,
+  onLogout?: () => void
+}
+
+ErrorBoundary Props:
+{
+  children: ReactNode,
+  fallback?: ReactNode,
+  onError?: (error: Error, errorInfo: ErrorInfo) => void
+}
+
+LoadingSpinner Props:
+{
+  size?: 'small' | 'medium' | 'large',
+  message?: string
+}
+
+ThemeToggle Props:
+{
+  defaultTheme?: 'light' | 'dark'
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>💡 Implementation Examples</h2>
+            
+            <h3>Using SystemHeader</h3>
+            <pre><code>import { SystemHeader } from '~/components/layout/SystemHeader';
+
+function MyPage() {
+  return (
+    &lt;div&gt;
+      &lt;SystemHeader 
+        title="SAI Application"
+        showUserInfo={true}
+        showLogout={true}
+      /&gt;
+      &lt;main&gt;
+        {/* Page content */}
+      &lt;/main&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+            <h3>Error Boundary Usage</h3>
+            <pre><code>import { ErrorBoundary } from '~/components/layout/ErrorBoundary';
+
+function App() {
+  return (
+    &lt;ErrorBoundary
+      fallback={&lt;div&gt;Something went wrong. Please refresh.&lt;/div&gt;}
+      onError={(error) => console.error('App error:', error)}
+    &gt;
+      &lt;Routes&gt;
+        {/* App routes */}
+      &lt;/Routes&gt;
+    &lt;/ErrorBoundary&gt;
+  );
+}</code></pre>
+
+            <h3>Loading Spinner</h3>
+            <pre><code>import { LoadingSpinner } from '~/components/layout/LoadingSpinner';
+
+function DataPage() {
+  const { data, loading } = useData();
+  
+  if (loading) {
+    return &lt;LoadingSpinner size="large" message="Loading data..." /&gt;;
+  }
+  
+  return &lt;div&gt;{data}&lt;/div&gt;;
+}</code></pre>
+
+            <h3>Theme Toggle Integration</h3>
+            <pre><code>import { ThemeToggle } from '~/components/layout/ThemeToggle';
+
+function HeaderControls() {
+  return (
+    &lt;div className="controls"&gt;
+      &lt;ThemeToggle defaultTheme="light" /&gt;
+      &lt;LogoutButton /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>✅ Acceptance Criteria Examples</h2>
+            <ul>
+                <li>✓ SystemHeader appears on all authenticated pages</li>
+                <li>✓ Header displays logged-in user's full name</li>
+                <li>✓ Logout button in header logs user out and redirects to login</li>
+                <li>✓ ErrorBoundary catches React errors and shows fallback UI</li>
+                <li>✓ Error boundary displays user-friendly error message</li>
+                <li>✓ LoadingSpinner displays during data fetching</li>
+                <li>✓ Spinner animates smoothly without janky performance</li>
+                <li>✓ Theme toggle switches between light and dark mode</li>
+                <li>✓ Theme preference persists in localStorage</li>
+                <li>✓ Theme applies to all components consistently</li>
+                <li>✓ Layout is responsive on mobile, tablet, and desktop</li>
+                <li>✓ Header remains fixed at top during scroll (optional)</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Index</a></p>
+            <p><em>Last update: 2026-01-26</em></p>
+        </footer>
+    </div>
+</body>
+</html>
