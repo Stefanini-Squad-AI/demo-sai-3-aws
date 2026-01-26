@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BILLPAYMENT - Bill Payment Processing</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .section { background: white; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #2d3748; }
+        .header h1 { color: white; margin: 0; }
+        .header p { opacity: 0.9; margin: 10px 0 0 0; }
+        code { background: #f7fafc; padding: 2px 6px; border-radius: 3px; color: #e53e3e; }
+        pre { background: #2d3748; color: #fff; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; margin-right: 10px; }
+        footer { text-align: center; padding: 40px 20px; color: #718096; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💵 BILLPAYMENT - Bill Payment Processing</h1>
+            <p>User Story Development Guide</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Purpose:</strong> Process bill payments with account validation and confirmation</p>
+            <p><strong>Business Context:</strong> This module handles bill payment processing including validation of account status, payment amount validation, and generating confirmation numbers for successful payments.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <ul>
+                <li><strong>Process Payment:</strong> As a customer, I want to make a bill payment to reduce my account balance</li>
+                <li><strong>Payment Validation:</strong> As a system, I want to validate account status before processing to prevent invalid payments</li>
+                <li><strong>Receive Confirmation:</strong> As a customer, I want to receive a confirmation number to verify my payment was successful</li>
+                <li><strong>Payment History:</strong> As a CSR, I want to view payment history to assist customers with payment inquiries</li>
+            </ul>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>BillPaymentScreen:</strong> Complete payment form with validation</li>
+                <li><strong>useBillPayment Hook:</strong> Payment submission logic with status checks</li>
+                <li><strong>Payment Validation:</strong> Pre-built validation rules for amount and account status</li>
+                <li><strong>Confirmation Component:</strong> Formatted confirmation display with print option</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Display payment form, Validate amount, Show confirmation</li>
+                <li><strong>Medium (3-5 pts):</strong> Account status validation, Payment scheduling, Multiple payment methods</li>
+                <li><strong>Complex (5-8 pts):</strong> Recurring payments, Auto-pay setup, Payment plan management</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <ul>
+                <li><strong>BillPaymentScreen:</strong> Main payment form with amount input and account selection</li>
+                <li><strong>useBillPayment:</strong> Hook managing payment submission and validation</li>
+                <li><strong>PaymentConfirmation:</strong> Display component for successful payment confirmation</li>
+                <li><strong>AccountStatusValidator:</strong> Validates account eligibility for payment</li>
+            </ul>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>React Hook Form:</strong> Form state management</li>
+                <li><strong>API Client:</strong> Payment API requests</li>
+                <li><strong>Account Module:</strong> Account status validation</li>
+                <li><strong>Transaction Module:</strong> Record payment as transaction</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>POST /payments/bills
+Request: { 
+  accountId: string,
+  paymentAmount: number,
+  paymentMethod: string,
+  paymentDate?: string
+}
+Response: { 
+  success: boolean,
+  confirmationNumber: string,
+  paymentId: string,
+  processedAmount: number,
+  newBalance: number,
+  paymentDate: string,
+  message: string
+}
+
+Validation Rules:
+- Account must be in ACTIVE status
+- Payment amount must be > 0 and <= current balance
+- Payment method must be valid (BANK_ACCOUNT, DEBIT_CARD, CHECK)
+- Payment date cannot be in the past</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>💡 Implementation Examples</h2>
+            
+            <h3>Using Bill Payment Hook</h3>
+            <pre><code>import { useBillPayment } from '~/features/billPayment/hooks/useBillPayment';
+
+function PaymentForm({ accountId }) {
+  const { submitPayment, loading, error } = useBillPayment();
+  
+  const handleSubmit = async (data) =&gt; {
+    const result = await submitPayment({
+      accountId,
+      paymentAmount: data.amount,
+      paymentMethod: 'BANK_ACCOUNT'
+    });
+    
+    if (result.success) {
+      alert(`Payment confirmed: ${result.confirmationNumber}`);
+    }
+  };
+  
+  return &lt;PaymentForm onSubmit={handleSubmit} loading={loading} /&gt;;
+}</code></pre>
+
+            <h3>Payment Confirmation Display</h3>
+            <pre><code>import { PaymentConfirmation } from '~/features/billPayment/PaymentConfirmation';
+
+function ConfirmationPage({ paymentResult }) {
+  return (
+    &lt;PaymentConfirmation
+      confirmationNumber={paymentResult.confirmationNumber}
+      amount={paymentResult.processedAmount}
+      newBalance={paymentResult.newBalance}
+      paymentDate={paymentResult.paymentDate}
+      onPrint={() =&gt; window.print()}
+    /&gt;
+  );
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>✅ Acceptance Criteria Examples</h2>
+            <ul>
+                <li>✓ Payment form displays current account balance</li>
+                <li>✓ Amount field validates payment is greater than $0</li>
+                <li>✓ Amount field validates payment does not exceed balance</li>
+                <li>✓ System validates account is in ACTIVE status before processing</li>
+                <li>✓ Suspended or closed accounts cannot make payments</li>
+                <li>✓ Successful payment generates unique confirmation number</li>
+                <li>✓ Confirmation page displays payment details correctly</li>
+                <li>✓ New balance updates immediately after payment</li>
+                <li>✓ Payment records in transaction history within 1 second</li>
+                <li>✓ Error messages clearly indicate reason for payment failure</li>
+                <li>✓ Confirmation can be printed for customer records</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Index</a></p>
+            <p><em>Last update: 2026-01-26</em></p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACCOUNT - Account Management</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .section { background: white; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #2d3748; }
+        .header h1 { color: white; margin: 0; }
+        .header p { opacity: 0.9; margin: 10px 0 0 0; }
+        code { background: #f7fafc; padding: 2px 6px; border-radius: 3px; color: #e53e3e; }
+        pre { background: #2d3748; color: #fff; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; margin-right: 10px; }
+        footer { text-align: center; padding: 40px 20px; color: #718096; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>👤 ACCOUNT - Account Management</h1>
+            <p>User Story Development Guide</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Purpose:</strong> View and manage customer account details and associated credit cards</p>
+            <p><strong>Business Context:</strong> This module provides comprehensive account management capabilities, allowing users to view account details, update account information, and see all credit cards associated with an account.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 User Story Development Guide</h2>
+            
+            <h3>📝 Specific US Templates</h3>
+            <ul>
+                <li><strong>View Account:</strong> As a customer service rep, I want to view account details to assist customers with inquiries</li>
+                <li><strong>Update Account:</strong> As a back-office user, I want to update account information to keep customer records current</li>
+                <li><strong>View Cards:</strong> As an account manager, I want to see all cards for an account to provide comprehensive service</li>
+                <li><strong>Account Status:</strong> As a CSR, I want to see account status and balance to verify account standing</li>
+            </ul>
+
+            <h3>⚡ Development Acceleration Factors</h3>
+            <ul>
+                <li><strong>useAccountView Hook:</strong> Pre-built hook for fetching account details with loading states</li>
+                <li><strong>useAccountUpdate Hook:</strong> Form submission logic with validation</li>
+                <li><strong>AccountViewScreen:</strong> Complete component for displaying account information</li>
+                <li><strong>AccountUpdateScreen:</strong> Editable form with field validation</li>
+            </ul>
+
+            <h3>📊 Complexity Guidelines</h3>
+            <ul>
+                <li><strong>Simple (1-2 pts):</strong> Display account details, Show associated cards list, View account status</li>
+                <li><strong>Medium (3-5 pts):</strong> Update account information, Add field validation, Handle update errors</li>
+                <li><strong>Complex (5-8 pts):</strong> Bulk account updates, Account merge functionality, Audit trail integration</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Technical Foundation</h2>
+            
+            <h3>🏗️ Key Components</h3>
+            <ul>
+                <li><strong>AccountViewScreen:</strong> Read-only view of account details with navigation to cards</li>
+                <li><strong>AccountUpdateScreen:</strong> Form for editing account information</li>
+                <li><strong>useAccountView:</strong> Hook managing account data fetching and state</li>
+                <li><strong>useAccountUpdate:</strong> Hook handling account update with optimistic updates</li>
+            </ul>
+
+            <h3>🔗 Dependencies</h3>
+            <ul>
+                <li><strong>React Hook Form:</strong> Form state management</li>
+                <li><strong>API Client:</strong> Account API requests</li>
+                <li><strong>React Router:</strong> Navigation between view/edit</li>
+                <li><strong>Credit Card Module:</strong> Display associated cards</li>
+            </ul>
+
+            <h3>🌐 Public Interfaces</h3>
+            <pre><code>GET /accounts/view
+Request: { accountId: string }
+Response: { 
+  accountId: string,
+  accountHolder: string,
+  accountStatus: string,
+  currentBalance: number,
+  availableCredit: number,
+  cards: Array<CardSummary>
+}
+
+POST /accounts/update
+Request: { 
+  accountId: string,
+  accountHolder?: string,
+  contactEmail?: string,
+  contactPhone?: string
+}
+Response: { 
+  success: boolean,
+  message: string,
+  updatedAccount: Account
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>💡 Implementation Examples</h2>
+            
+            <h3>Using Account View Hook</h3>
+            <pre><code>import { useAccountView } from '~/features/account/hooks/useAccountView';
+
+function AccountDetails() {
+  const { account, loading, error } = useAccountView('ACC123456');
+  
+  if (loading) return &lt;LoadingSpinner /&gt;;
+  if (error) return &lt;ErrorMessage error={error} /&gt;;
+  
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;{account.accountHolder}&lt;/h2&gt;
+      &lt;p&gt;Balance: ${account.currentBalance}&lt;/p&gt;
+      &lt;p&gt;Available: ${account.availableCredit}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+            <h3>Account Update Form</h3>
+            <pre><code>import { useAccountUpdate } from '~/features/account/hooks/useAccountUpdate';
+
+function UpdateAccount({ accountId }) {
+  const { updateAccount, loading } = useAccountUpdate();
+  
+  const handleSubmit = async (data) =&gt; {
+    await updateAccount({
+      accountId,
+      accountHolder: data.name,
+      contactEmail: data.email,
+      contactPhone: data.phone
+    });
+  };
+  
+  return &lt;AccountForm onSubmit={handleSubmit} loading={loading} /&gt;;
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>✅ Acceptance Criteria Examples</h2>
+            <ul>
+                <li>✓ Account details load within 2 seconds</li>
+                <li>✓ All account fields display correctly (name, status, balance, etc.)</li>
+                <li>✓ Associated cards list shows all cards linked to account</li>
+                <li>✓ Update form validates required fields before submission</li>
+                <li>✓ Successful update shows confirmation message</li>
+                <li>✓ Error messages display clearly for failed updates</li>
+                <li>✓ Navigation to card details works from cards list</li>
+                <li>✓ Account status badge shows correct color (active=green, suspended=red)</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Back to Index</a></p>
+            <p><em>Last update: 2026-01-26</em></p>
+        </footer>
+    </div>
+</body>
+</html>
