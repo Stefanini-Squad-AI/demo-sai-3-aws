@@ -401,6 +401,20 @@ export default function LoginPage() {
                     borderRadius: 2,
                     fontWeight: 600,
                     fontSize: '1rem',
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                    color: theme.palette.primary.contrastText,
+                    border: 'none',
+                    '&:hover': {
+                      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.secondary.main, 0.9)})`,
+                      boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.3)}`,
+                    },
+                    '&:active': {
+                      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.8)}, ${alpha(theme.palette.secondary.main, 0.8)})`,
+                    },
+                    '&:disabled': {
+                      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.5)}, ${alpha(theme.palette.secondary.main, 0.5)})`,
+                      color: alpha(theme.palette.primary.contrastText, 0.7),
+                    },
                   }}
                 >
                   {isLoading ? 'Signing in...' : 'ENTER = Sign in'}
