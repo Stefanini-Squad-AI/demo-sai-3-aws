@@ -63,8 +63,15 @@ node_modules/
 .nuxt
 
 # Vite build output
+dist
 dist-ssr
 *.local
+
+# Build artifacts (no versionar archivos compilados en la raíz)
+/assets
+/404.html
+# Excluir index.html compilado solo si está en la raíz (el fuente está ok)
+# Si tienes problemas, podrías necesitar ajustar esto
 
 # Rollup build output
 build/
