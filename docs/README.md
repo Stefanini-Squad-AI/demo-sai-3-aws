@@ -1,15 +1,20 @@
-# 📚 Documentation - Accounts Module
+# 📚 Documentation - Accounts & Administration Modules
 
 ## 📁 Structure
 
 ```
 docs/
 ├── system-overview.md              # 🎯 Single source of truth (98% accuracy)
+├── modules/
+│   └── administration-menu/
+│       └── administration-menu-overview.md  # 🧾 Overview del Administration Menu
 └── site/
-    ├── index.html                  # 🏠 Main navigable page
+    ├── index.html                  # 🏠 Main navegable page
     └── modules/
-        └── accounts/
-            └── index.html          # 📦 Accounts module detailed guide
+        ├── accounts/
+        │   └── index.html          # 📦 Accounts module detailed guide
+        └── administration-menu/
+            └── index.html          # 📦 Administration Menu guide
 ```
 
 ## 🚀 Quick Start
@@ -21,6 +26,9 @@ open docs/site/index.html
 
 # Or navigate directly to accounts module
 open docs/site/modules/accounts/index.html
+
+# Navega directamente a la guía del módulo Administration Menu
+open docs/site/modules/administration-menu/index.html
 ```
 
 ### Option 2: Read Markdown
@@ -30,6 +38,9 @@ cat docs/system-overview.md
 
 # Or use your favorite markdown viewer
 code docs/system-overview.md
+
+# Revisa la referencia específica del módulo Administration Menu
+cat docs/modules/administration-menu/administration-menu-overview.md
 ```
 
 ## 📖 What's Included
@@ -62,6 +73,17 @@ Comprehensive development guide with:
 - Performance considerations
 - Risk mitigation strategies
 
+### 4. Administration Menu Guide (site/modules/administration-menu/index.html)
+Guía completa en español con:
+- Patrones específicos de historias para listar, crear, editar y eliminar usuarios con atajos de teclado.
+- Descripción de componentes clave (`MenuScreen`, `UserListScreen`, `UserAddScreen`, `UserUpdateScreen`, `UserDeleteScreen`).
+- Acceso a los criterios de aceptación (autenticación, validación, rendimiento, manejo de errores) y riesgos de desarrollo.
+- Ejemplos de código reales (por ejemplo `handleUserAction` en `useUserList`) y explicaciones del adaptador `UserApiAdapter`.
+- Consideraciones de performance y métricas (API list < 400ms, guardado < 500ms).
+
+### 5. Administration Menu Overview (docs/modules/administration-menu/administration-menu-overview.md)
+Resumen rápido del módulo con estadísticas, APIs, reglas de negocio (userId 8 caracteres, password obligatorio, F3/F5/F7/F8), modelos de datos (`UserSecurityData`, `UserUpdateData`) y tareas relacionadas.
+
 ## 🎯 Key Features
 
 ### ✅ 98% Codebase Accuracy
@@ -69,18 +91,22 @@ All documentation based on direct analysis of:
 - `/tmp/workspace/repo/frontend/app/components/account/` - React components
 - `/tmp/workspace/repo/management/src/main/java/` - Spring Boot backend
 - Real TypeScript interfaces, Java entities, and service implementations
+- `/tmp/workspace/repo/app/components/menu/` and `/tmp/workspace/repo/app/components/user/` - Menús y formularios del módulo Administration Menu
+- `/tmp/workspace/repo/app/services/userApi.ts` con `UserApiAdapter` y los hooks `useUserList`, `useUserAdd`, `useUserUpdate`, `useUserDelete`
 
 ### ✅ Real Patterns, No Fiction
 - **NO** generic BaseForm or BaseDataTable components
 - **YES** Actual Material-UI components (TextField, Card, Grid, Button)
 - **YES** Real API endpoints from controllers
 - **YES** Actual business rules from COBOL migration
+- **YES** Flujos de teclado heredados (F3, F4, F5, F7, F8, Enter) y validaciones estrictas de `userId`, `password`, `userType` en el módulo Administration Menu
 
 ### ✅ Actionable User Stories
 Templates include:
 - Specific role-based patterns (official de crédito, administrador, agente)
 - Real use cases (visualizar balance, actualizar límite, cambiar estado)
 - Complexity estimation (1-2 pts simple, 3-5 pts medium, 5-8 pts complex)
+- Historias para administración: templates con `userId` de 8 dígitos, selección `U/D`, atajos F3/F5 y confirmaciones en `UserListScreen` y `UserUpdateScreen`
 
 ## 📋 User Story Examples
 
@@ -105,23 +131,51 @@ GET  /api/accounts/{accountId}             - Get for update
 PUT  /api/accounts/{accountId}             - Update account & customer
 ```
 
+### Backend APIs - Administración
+```
+GET    /api/users/list               - Lista paginada con filtros `searchUserId`, `pageNumber`, `direction`
+POST   /api/users/process-selection  - Procesa `U`/`D` y devuelve `redirectUrl` para edición o eliminación
+GET    /api/users/previous-page      - Página anterior (F7), requiere `firstUserId` y `currentPage`
+GET    /api/users/next-page          - Página siguiente (F8), requiere `lastUserId`, `currentPage`, `hasNextPage`
+POST   /api/users                    - Crear usuario (payload: `userId`, `firstName`, `lastName`, `password`, `userType`)
+GET    /api/users/{userId}           - Obtener detalle para editar o eliminar
+PUT    /api/users/{userId}           - Actualizar usuario con validaciones de 8 caracteres
+DELETE /api/users/{userId}           - Eliminar usuario después de confirmación
+```
+
 ### Frontend Screens
 - **AccountViewScreen.tsx** - Full-page view with Material-UI cards
 - **AccountUpdateScreen.tsx** - Edit mode with validation
+- **MenuScreen.tsx** - Pantalla principal del menú administrativo (`CADM`) con teclas F3/Escape y chips numerados.
+- **UserListScreen.tsx** - Tabla con búsqueda, chips de rol y navegación `Enter`, `F7`, `F8`.
+- **UserAddScreen.tsx** - Formulario de creación con validaciones de `userId`, `password` y toggle de visibilidad.
+- **UserUpdateScreen.tsx** - Carga automática por query string, detección de cambios y guardado con F5.
+- **UserDeleteScreen.tsx** - Verifica `userId`, mostrador de mensaje y eliminación con confirmación.
 
 ### Data Models
 - **Account** (11-digit ID, BigDecimal balances, LocalDate fields)
 - **Customer** (9-digit ID, SSN, FICO score 300-850, address)
 - **CardXrefRecord** (Links Account → Customer → Card)
+- **UserSecurityData** (userId, firstName, lastName, userType, fechas de creación/último login, estado activo)
+- **UserUpdateData / UserAddRequest** (payloads que incluyen userId, firstName, lastName, password y userType A/U)
 
 ## 📊 Module Statistics
 
-- **Components:** 2 main screens (View, Update)
+### Cuentas
+- **Components:** 2 pantallas (AccountViewScreen, AccountUpdateScreen)
 - **Services:** 3 (AccountViewService, AccountUpdateService, AccountValidationService)
 - **Entities:** 3 (Account, Customer, CardXrefRecord)
-- **API Endpoints:** 4 (2 GET, 1 PUT, 1 GET init)
-- **Business Rules:** 12 documented
-- **User Story Templates:** 4 specific patterns
+- **API Endpoints:** 4 documentados (búsqueda, init, GET y PUT)
+- **Business Rules:** 12 reglas del dominio bancario
+- **User Story Templates:** 4 patrones (visualizar, actualizar, auditoría)
+
+### Administration Menu
+- **Components:** 5 pantallas (MenuScreen, UserList, UserAdd, UserUpdate, UserDelete)
+- **Hooks/Services:** 5 (4 hooks + UserApiAdapter)
+- **Entities/Data Models:** 1 principal (UserSecurityData/UserUpdateData)
+- **API Endpoints:** 8 endpoints (`/api/users/*`, selección y paginación)
+- **Business Rules:** 7 reglas (userId 1-8, password 8, userType A/U, teclas F3/F4/F5/F7/F8)
+- **User Story Templates:** 4 flujos (listar/seleccionar, crear, editar, eliminar)
 
 ## 🚨 Important Notes
 
@@ -161,7 +215,7 @@ PUT  /api/accounts/{accountId}             - Update account & customer
 
 ---
 
-**Version:** 1.0  
-**Created:** 2026-01-21  
-**For:** DS3A-4 - Documentación para el módulo de cuentas  
-**Accuracy:** 98% (based on direct source code analysis)
+**Version:** 1.1  
+**Created:** 2026-02-15  
+**For:** DS3A-4 y DS3A-8 - Documentación para los módulos de cuentas y Administration Menu  
+**Accuracy:** 98% (basado en análisis directo del código fuente)

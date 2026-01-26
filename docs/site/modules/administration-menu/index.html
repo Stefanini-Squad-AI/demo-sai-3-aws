@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration Menu - Guía de Desarrollo de Historias de Usuario</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background: #f5f7fa;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .card {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .card h4 { color: #667eea; margin-bottom: 10px; }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+        .complexity {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .complexity-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .simple { background: #d4edda; color: #155724; }
+        .medium { background: #fff3cd; color: #856404; }
+        .complex { background: #f8d7da; color: #721c24; }
+        ul {
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+        footer a { color: #667eea; text-decoration: none; font-weight: 600; }
+        footer a:hover { text-decoration: underline; }
+        .badge-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .badge-tag {
+            padding: 5px 12px;
+            background: #e3f2fd;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #1976d2;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📦 Administration Menu</h1>
+            <p style="font-size: 1.2em; opacity: 0.95;">Guía de desarrollo en español para el módulo de seguridad y administración</p>
+            <p style="margin-top: 10px;"><strong>Propósito:</strong> Gestionar usuarios del sistema (listar, crear, editar, borrar) respetando las teclas rápidas heredadas del entorno COBOL.</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Overview</h2>
+            <p><strong>Contexto de negocio:</strong> Este módulo es la puerta de entrada de los administradores al back-office. Permite gestionar cuentas de usuarios del sistema, mantener las credenciales, asignar roles `A`/`U` y auditar accesos desde la misma interfaz `CADM` que reemplazó al COBOL original.</p>
+            <p><strong>Responsabilidades principales:</strong></p>
+            <ul>
+                <li>Exponer el menú de administración (`MenuScreen.tsx`) con opciones numeradas para listar, crear, actualizar y eliminar usuarios.</li>
+                <li>Listar usuarios con paginación, selección `U/D` y atajos (`Enter`, `F7`, `F8`) manteniendo sensación de mainframe.</li>
+                <li>Validar formularios de alta/edición con contraseñas de 8 caracteres y tipos `A`/`U` obligatorios.</li>
+                <li>Comunicar cada acción a los endpoints REST (`/api/users/*`) y reutilizar el adaptador `UserApiAdapter` para no repetir lógica.</li>
+                <li>Ofrecer mensajes de éxito/fracaso con `Alert` y `Snackbar` mientras se respeta la navegación con `ProtectedRoute requiredRole="admin"`.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🎯 Guía de Desarrollo de Historias de Usuario</h2>
+            <h3>📝 Templates específicos</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>Listar y seleccionar usuario</h4>
+                    <p><strong>Patrón:</strong> Como admin, quiero listar usuarios y usar teclas `Enter`, `F7`, `F8` para seleccionar y navegar.</p>
+                    <p><strong>Ejemplo:</strong> Como administrador de seguridad, quiero buscar un usuario por `userId`, marcar `U` y presionar Enter para ir al formulario de edición.</p>
+                </div>
+                <div class="card">
+                    <h4>Crear usuario nuevo</h4>
+                    <p><strong>Patrón:</strong> Como admin, quiero un formulario guiado que valide `userId`, `password` y `userType` antes de guardar.</p>
+                    <p><strong>Ejemplo:</strong> Como encargado de accesos, quiero crear un usuario con ID de 8 caracteres y contraseña segura para autorizar un nuevo operador.</p>
+                </div>
+                <div class="card">
+                    <h4>Eliminar usuario con confirmación</h4>
+                    <p><strong>Patrón:</strong> Como auditor, quiero cargar el usuario, verificar los datos y presionar F5 para eliminarlo con mensaje de confirmación.</p>
+                    <p><strong>Ejemplo:</strong> Como auditor de cumplimiento, quiero borrar un usuario inactivo solo después de ver su nombre completo y recibir el mensaje de eliminación.</p>
+                </div>
+            </div>
+
+            <h3>⚡ Factores de aceleración</h3>
+            <ul>
+                <li><strong>`useUserList`:</strong> encapsula búsqueda paginada, navegación F7/F8 y validación de selección (U/D) para reutilizar la lógica en futuros listados administrativos.</li>
+                <li><strong>`UserApiAdapter`:</strong> traduce los contratos del frontend a los endpoints Spring (`/api/users/*`) y permite alternar entre MSW y backend real sin tocar componentes.</li>
+                <li><strong>`Material-UI List + Chips`:</strong> los chips numerados y los botones con íconos agilizan la replicación del menú numérico del mainframe.</li>
+                <li><strong>`ProtectedRoute requiredRole="admin"`:</strong> asegura que solo personal autorizado accede al menú, permitiendo reutilizar la misma lógica en futuras rutas.</li>
+                <li><strong>`MSW + VITE_USE_MOCKS`:</strong> aceleran el desarrollo de historias sin depender de un backend real.</li>
+            </ul>
+
+            <h3>📊 Guías de complejidad</h3>
+            <div class="complexity">
+                <span class="complexity-badge simple">Simple (1-2 pts)</span>
+                <span class="complexity-badge medium">Medio (3-5 pts)</span>
+                <span class="complexity-badge complex">Complejo (5-8 pts)</span>
+            </div>
+            <ul>
+                <li><strong>Simple:</strong> Agregar un tooltip o badge en la tabla de usuarios que indique el rol (A/U).</li>
+                <li><strong>Medio:</strong> Implementar una validación adicional (por ejemplo, no permitir repetir nombres exactos) antes de llamar a `POST /api/users`.</li>
+                <li><strong>Complejo:</strong> Integrar un servicio externo de auditoría que registre cada `Update/Delete` en un sistema separado y coordinar la UI para mostrar estado.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Fundación Técnica</h2>
+            <h3>🏗️ Componentes clave</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>MenuScreen.tsx</h4>
+                    <p><strong>Responsabilidad:</strong> Orquestar el menú CADM con `AdminPanelSettings`, chips numerados y teclado F3.</p>
+                    <p><strong>Reusabilidad:</strong> Patrón replicable para futuros menús de operación con atajos.</p>
+                </div>
+                <div class="card">
+                    <h4>UserListScreen.tsx</h4>
+                    <p><strong>Responsabilidad:</strong> Mostrar tabla, búsqueda, seleccion y paginación con SystemHeader.</p>
+                    <p><strong>Reusabilidad:</strong> Funciones `handleEnterKey`, `handlePageChange` reutilizables para otras listas.</p>
+                </div>
+                <div class="card">
+                    <h4>UserAddScreen.tsx</h4>
+                    <p><strong>Responsabilidad:</strong> Formulario con validaciones, toggle de visibilidad y `handleFieldChange` centralizado.</p>
+                    <p><strong>Reusabilidad:</strong> Renderizado dinámico de `TextField` y adornos (icons, chips).</p>
+                </div>
+                <div class="card">
+                    <h4>UserUpdateScreen.tsx</h4>
+                    <p><strong>Responsabilidad:</strong> Cargar `userId`, detectar cambios (`hasChanges`) y pedir confirmación antes de guardar.</p>
+                    <p><strong>Reusabilidad:</strong> Patrón `useMutation` + validación de cambios para formularios transaccionales.</p>
+                </div>
+                <div class="card">
+                    <h4>UserDeleteScreen.tsx</h4>
+                    <p><strong>Responsabilidad:</strong> Verificar que el `userId` existe antes de eliminar y mostrar `messageType`.</p>
+                    <p><strong>Reusabilidad:</strong> Flow de confirmación útil para otras pantallas destructivas.</p>
+                </div>
+                <div class="card">
+                    <h4>Hooks de usuario</h4>
+                    <p><strong>Responsabilidad:</strong> `useUserList`, `useUserAdd`, `useUserUpdate`, `useUserDelete` encapsulan lógica de validación y navegación.</p>
+                    <p><strong>Reusabilidad:</strong> Plantilla para cualquier hook que combine `useMutation`, `navigate` y `Alert`.</p>
+                </div>
+                <div class="card">
+                    <h4>UserApiAdapter</h4>
+                    <p><strong>Responsabilidad:</strong> Adaptar requests/responses entre frontend y backend real y manejar paginación.</p>
+                    <p><strong>Reusabilidad:</strong> Modelo de adaptador para otros módulos (transacciones, tarjetas).</p>
+                </div>
+            </div>
+
+            <h3>🔗 Dependencias</h3>
+            <ul>
+                <li><strong>React Router DOM:</strong> `ProtectedRoute` dirige a `/menu/admin` y protege las rutas `/admin/users/*`.</li>
+                <li><strong>Redux Toolkit + store hooks:</strong> `useAppDispatch` y `logoutUser` para mantener sesión segura.</li>
+                <li><strong>Material-UI 5:</strong> Listas, Tables, Chips, Alerts y SystemHeader para UI consistente.</li>
+                <li><strong>MSW + VITE_USE_MOCKS:</strong> Permiten alternar entre mocks y backend real sin modificar componentes.</li>
+                <li><strong>Spring Security + JWT:</strong> El backend solo acepta tokens válidos para los endpoints `/api/users/*`.</li>
+            </ul>
+
+            <h3>🌐 Interfaces públicas</h3>
+            <pre><code>GET  /api/users/list               - Lista paginada (params: searchUserId, pageNumber, direction)
+POST /api/users/process-selection   - Procesa selección U/D y devuelve redirectUrl
+GET  /api/users/previous-page       - Página anterior (F7)
+GET  /api/users/next-page           - Página siguiente (F8)
+POST /api/users                    - Crear usuario (userId, firstName, lastName, password, userType)
+GET  /api/users/{userId}           - Obtener detalle para edición/eliminación
+PUT  /api/users/{userId}           - Guardar cambios validados (UserUpdateRequest)
+DELETE /api/users/{userId}         - Eliminar usuario con confirmación</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>📊 Modelos de Datos</h2>
+            <pre><code>export interface UserSecurityData {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  userType: 'A' | 'U' | 'R';
+  createdDate?: string;
+  lastLoginDate?: string;
+  isActive?: boolean;
+}
+
+export interface UserUpdateData {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  userType: 'A' | 'U';
+  password?: string;
+  createdDate?: string;
+  lastLoginDate?: string;
+  isActive?: boolean;
+}
+
+export interface UserAddRequest {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  userType: string;
+}</code></pre>
+        </section>
+
+        <section class="section">
+            <h2>📋 Reglas de Negocio</h2>
+            <ul>
+                <li><strong>RN-AM-001:</strong> `userId` siempre en mayúsculas, 1-8 caracteres y único.</li>
+                <li><strong>RN-AM-002:</strong> `password` obligatorio; creación permite ≤8 y actualización exige exactamente 8.</li>
+                <li><strong>RN-AM-003:</strong> `userType` solo acepta `A` o `U` y se limpia antes del submit.</li>
+                <li><strong>RN-AM-004:</strong> F3/Escape regresa al menú (`/menu/admin`), F12 cierra sesión (`logoutUser`).</li>
+                <li><strong>RN-AM-005:</strong> ENTER procesa la primera selección `U/D`, F7/F8 controlan paginación y F4 limpia formularios.</li>
+                <li><strong>RN-AM-006:</strong> Eliminar usuario requiere cargar datos (`GET /api/users/{userId}`) y confirmar antes de ejecutar `DELETE`.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🎯 Acceptance Criteria Patterns</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4>Autenticación</h4>
+                    <p>Solo usuarios con `role: 'admin'` pueden acceder a `/menu/admin` y a `/admin/users/*` gracias a `ProtectedRoute`.</p>
+                </div>
+                <div class="card">
+                    <h4>Validación</h4>
+                    <p>Los formularios validan `userId`, `password` y `userType` antes de invocar `useMutation`. Se muestra un Alert en caso de error.</p>
+                </div>
+                <div class="card">
+                    <h4>Performance</h4>
+                    <p>`GET /api/users/list` responde en < 400ms, `POST /api/users/process-selection` en < 300ms y la paginación es de 10 filas por request.</p>
+                </div>
+                <div class="card">
+                    <h4>Error Handling</h4>
+                    <p>Cuando no se encuentra un usuario, el hook muestra mensaje y el botón de eliminación queda deshabilitado hasta que se busque uno válido.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>⚡ Consideraciones de Rendimiento</h2>
+            <ul>
+                <li><strong>Lista de usuarios:</strong> `GET /api/users/list` debe responder en menos de 400ms (P95) con paginación de 10 filas.</li>
+                <li><strong>Procesamiento de selección:</strong> `POST /api/users/process-selection` entrega `redirectUrl` en < 300ms y permite navegar con Enter.</li>
+                <li><strong>Guardado / Eliminación:</strong> `PUT` y `DELETE` no deben superar 500ms y muestran mensaje de confirmación antes de recargar la lista.</li>
+                <li><strong>Carga inicial:</strong> El menú admin (`/menu/admin`) debe inicializarse en < 1s incluso con MSW activado.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🚨 Riesgos de Desarrollo y Mitigaciones</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4>⚠️ Riesgo: Dependencia de `/api/users`</h4>
+                    <p><strong>Descripción:</strong> Cambios en los endpoints o en la estructura del DTO rompen `UserApiAdapter` y los hooks.</p>
+                    <p><strong>Mitigación:</strong> Versionar el adaptador, mantener MSW sincronizado y documentar `POST /api/users/process-selection` en Swagger.</p>
+                </div>
+                <div class="card">
+                    <h4>⚠️ Riesgo: Flujos de teclado</h4>
+                    <p><strong>Descripción:</strong> Alterar los atajos (F5, F7, F8, Enter) afecta la capacidad operativa de los equipos legacy.</p>
+                    <p><strong>Mitigación:</strong> Añadir pruebas de integración que simulen los key handlers y actualizar la documentación cuando se introduzcan nuevas teclas.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📚 Ejemplos de Código</h2>
+            <h3>Patrón típico de selección y navegación</h3>
+            <pre><code>const handleUserAction = useCallback((action: UserSelectionAction) => {
+  if (!action.action || (action.action !== 'U' && action.action !== 'D')) {
+    options.onError?.('Invalid selection. Valid values are U and D');
+    return;
+  }
+
+  if (!action.userId.trim()) {
+    options.onError?.('User ID cannot be empty');
+    return;
+  }
+
+  switch (action.action.toUpperCase()) {
+    case 'U':
+      navigate(`/admin/users/update?userId=${action.userId}`);
+      break;
+    case 'D':
+      navigate(`/admin/users/delete?userId=${action.userId}`);
+      break;
+  }
+}, [navigate, options]);</code></pre>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Volver al hub de módulos</a></p>
+            <p><a href="../../index.html">🏠 Volver al centro de documentación</a></p>
+            <p style="color: #666; margin-top: 15px;"><em>Última actualización: 2026-02-15 | Precisión del módulo: 95%</em></p>
+        </footer>
+    </div>
+</body>
+</html>
