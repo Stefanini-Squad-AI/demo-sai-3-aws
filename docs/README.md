@@ -1,4 +1,4 @@
-# 📚 Documentation - Accounts Module
+# 📚 Documentation - CardDemo
 
 ## 📁 Structure
 

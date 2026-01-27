@@ -427,6 +427,90 @@ const mockAccountData: Record<number, AccountViewResponse> = {
 };
 
 export const accountHandlers = [
+  // ✅ NUEVO: Handler para GET /api/account-view con query params
+  http.get('/api/account-view', ({ request }) => {
+    const url = new URL(request.url);
+    const accountIdParam = url.searchParams.get('accountId');
+
+    const now = new Date();
+    const currentDate = now.toLocaleDateString('en-US', { 
+      month: '2-digit', 
+      day: '2-digit', 
+      year: '2-digit' 
+    });
+    const currentTime = now.toLocaleTimeString('en-US', { 
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+
+    // Validar que se proporcione accountId
+    if (!accountIdParam) {
+      return HttpResponse.json({
+        success: true,
+        data: {
+          currentDate,
+          currentTime,
+          transactionId: "CAVW",
+          programName: "COACTVWC",
+          errorMessage: "Account number not provided",
+          inputValid: false,
+          accountFilterValid: false,
+        },
+      });
+    }
+
+    // Convertir a número y validar formato
+    const accountId = parseInt(accountIdParam, 10);
+    const accountIdStr = accountId.toString();
+    
+    if (isNaN(accountId) || accountIdStr.length !== 11 || !/^\d{11}$/.test(accountIdStr)) {
+      return HttpResponse.json({
+        success: true,
+        data: {
+          currentDate,
+          currentTime,
+          transactionId: "CAVW",
+          programName: "COACTVWC",
+          errorMessage: "Account Filter must be a non-zero 11 digit number",
+          inputValid: false,
+          accountFilterValid: false,
+        },
+      });
+    }
+
+    // Buscar cuenta en datos mock
+    const accountData = mockAccountData[accountId];
+    
+    if (!accountData) {
+      return HttpResponse.json({
+        success: true,
+        data: {
+          currentDate,
+          currentTime,
+          transactionId: "CAVW",
+          programName: "COACTVWC",
+          errorMessage: `Account:${accountId} not found in Cross ref file`,
+          inputValid: false,
+          accountFilterValid: false,
+        },
+      });
+    }
+
+    console.log('✅ MSW Account View - Found account:', accountId);
+
+    // Simular delay de red
+    return HttpResponse.json({
+      success: true,
+      data: {
+        ...accountData,
+        currentDate,
+        currentTime,
+      },
+    });
+  }),
+
   http.get('/api/account-view/initialize', () => {
     const now = new Date();
     return HttpResponse.json({
