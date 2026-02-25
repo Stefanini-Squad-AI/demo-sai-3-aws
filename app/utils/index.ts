@@ -153,6 +153,90 @@ export const isValidPhoneNumber = (phone: string): boolean => {
   return phoneRegex.test(phone);
 };
 
+export const isValidCPF = (cpf: string): boolean => {
+  if (!cpf || typeof cpf !== 'string') return false;
+
+  // Remove formatting
+  const cleanCPF = cpf.replace(/\D/g, '');
+
+  // Must have exactly 11 digits
+  if (cleanCPF.length !== 11) return false;
+
+  // Reject sequences of same digits (e.g., 11111111111)
+  if (/^(\d)\1{10}$/.test(cleanCPF)) return false;
+
+  // Extract base digits and check digits
+  const baseDigits = cleanCPF.slice(0, 9);
+  const digit1 = parseInt(cleanCPF[9], 10);
+  const digit2 = parseInt(cleanCPF[10], 10);
+
+  // Calculate first check digit
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(baseDigits[i], 10) * (10 - i);
+  }
+  let remainder = sum % 11;
+  const expectedDigit1 = remainder < 2 ? 0 : 11 - remainder;
+
+  if (digit1 !== expectedDigit1) return false;
+
+  // Calculate second check digit
+  sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(baseDigits[i], 10) * (11 - i);
+  }
+  sum += expectedDigit1 * 2;
+  remainder = sum % 11;
+  const expectedDigit2 = remainder < 2 ? 0 : 11 - remainder;
+
+  return digit2 === expectedDigit2;
+};
+
+export const isValidCNPJ = (cnpj: string): boolean => {
+  if (!cnpj || typeof cnpj !== 'string') return false;
+
+  // Remove formatting
+  const cleanCNPJ = cnpj.replace(/\D/g, '');
+
+  // Must have exactly 14 digits
+  if (cleanCNPJ.length !== 14) return false;
+
+  // Reject sequences of same digits (e.g., 11111111111111)
+  if (/^(\d)\1{13}$/.test(cleanCNPJ)) return false;
+
+  // Extract base digits and check digits
+  const baseDigits = cleanCNPJ.slice(0, 12);
+  const digit1 = parseInt(cleanCNPJ[12], 10);
+  const digit2 = parseInt(cleanCNPJ[13], 10);
+
+  // Multipliers for first check digit calculation
+  const multipliers1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+
+  // Calculate first check digit
+  let sum = 0;
+  for (let i = 0; i < 12; i++) {
+    sum += parseInt(baseDigits[i], 10) * multipliers1[i];
+  }
+  let remainder = sum % 11;
+  const expectedDigit1 = remainder < 2 ? 0 : 11 - remainder;
+
+  if (digit1 !== expectedDigit1) return false;
+
+  // Multipliers for second check digit calculation
+  const multipliers2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+
+  // Calculate second check digit
+  sum = 0;
+  for (let i = 0; i < 12; i++) {
+    sum += parseInt(baseDigits[i], 10) * multipliers2[i];
+  }
+  sum += expectedDigit1 * 2;
+  remainder = sum % 11;
+  const expectedDigit2 = remainder < 2 ? 0 : 11 - remainder;
+
+  return digit2 === expectedDigit2;
+};
+
 export const validateRequired = (value: any): string | null => {
   if (value === null || value === undefined || value === '') {
     return 'This field is required';
